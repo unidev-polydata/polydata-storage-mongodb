@@ -1,9 +1,12 @@
 package com.unidev.polydata;
 
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
+
+import java.util.Optional;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -24,9 +27,23 @@ public class MongodbStorage {
         this.database = database;
     }
 
-    public PolyInfo polyInfo(String poly) {
+    public Optional<PolyInfo> polyInfo(String poly) {
         MongoCollection<Document> collection = mongoClient.getDatabase(database).getCollection(POLY_COLLECTION);
         Document document = collection.find(eq("_id", poly)).first();
-        return new PolyInfo(document);
+        return document != null ? Optional.of(new PolyInfo(document)) : Optional.empty();
     }
+
+    public PolyInfo savePolyInfo(PolyInfo polyInfo) {
+        MongoCollection<Document> collection = mongoClient.getDatabase(database).getCollection(POLY_COLLECTION);
+        Document document = new Document();
+        document.putAll(polyInfo);
+
+        collection.insertOne(document);
+
+        return polyInfo;
+    }
+
+
+
+
 }
