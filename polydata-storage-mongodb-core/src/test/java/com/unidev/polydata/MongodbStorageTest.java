@@ -2,6 +2,7 @@ package com.unidev.polydata;
 
 
 import com.mongodb.MongoClient;
+import com.unidev.polydata.domain.BasicPoly;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,6 +33,22 @@ public class MongodbStorageTest {
         Optional<PolyInfo> polyInfoById = mongodbStorage.polyInfo(randomId);
         assertTrue(polyInfoById.isPresent());
         assertEquals(randomId, polyInfoById.get()._id());
+    }
+
+    @Test
+    public void testPolyPersisting() {
+        String id = "qwe_" + System.currentTimeMillis();
+
+        Optional<BasicPoly> basicPoly = mongodbStorage.fetchPoly("tomato", id);
+        assertFalse(basicPoly.isPresent());
+
+        BasicPoly polyToSave = new BasicPoly();
+        polyToSave._id(id);
+
+        mongodbStorage.save("tomato", polyToSave);
+
+        Optional<BasicPoly> basicPoly2 = mongodbStorage.fetchPoly("tomato", id);
+        assertTrue(basicPoly2.isPresent());
     }
 
 }

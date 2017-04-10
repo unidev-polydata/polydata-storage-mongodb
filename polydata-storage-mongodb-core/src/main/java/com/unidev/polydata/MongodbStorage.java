@@ -4,6 +4,7 @@ package com.unidev.polydata;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.unidev.polydata.domain.BasicPoly;
 import org.bson.Document;
 
 import java.util.Optional;
@@ -43,6 +44,31 @@ public class MongodbStorage {
         return polyInfo;
     }
 
+    public MongoCollection<Document> fetchCollection(String poly) {
+        return mongoClient.getDatabase(database).getCollection(poly);
+    }
+
+    public BasicPoly save(String poly, BasicPoly basicPoly) {
+        MongoCollection<Document> collection = fetchCollection(poly);
+        Document document = new Document(basicPoly);
+        collection.insertOne(document);
+        return basicPoly;
+    }
+
+    public Optional<BasicPoly> fetchPoly(String poly, String id) {
+        return fetchRawPoly(poly, id);
+    }
+
+    protected Optional<BasicPoly> fetchRawPoly(String poly, String id) {
+        MongoCollection<Document> collection = fetchCollection(poly);
+        Document document = collection.find(eq("_id", id)).first();
+        if (document == null) {
+            return Optional.empty();
+        }
+        BasicPoly basicPoly = new BasicPoly();
+        basicPoly.putAll(document);
+        return Optional.of(basicPoly);
+    }
 
 
 
