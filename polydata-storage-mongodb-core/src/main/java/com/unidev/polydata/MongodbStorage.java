@@ -1,7 +1,6 @@
 package com.unidev.polydata;
 
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.unidev.polydata.domain.BasicPoly;
@@ -70,6 +69,14 @@ public class MongodbStorage {
         return Optional.of(basicPoly);
     }
 
+
+    public MongoCollection<Document> fetchTagsCollection(String poly) {
+        return mongoClient.getDatabase(database).getCollection(poly + ".tags");
+    }
+
+    public MongoCollection<Document> fetchTagIndexCollection(String poly, String tagIndex) {
+        return mongoClient.getDatabase(database).getCollection(poly + ".tagindex." + tagIndex);
+    }
 
 
 }
