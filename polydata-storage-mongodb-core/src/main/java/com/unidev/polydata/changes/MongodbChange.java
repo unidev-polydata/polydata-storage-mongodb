@@ -2,7 +2,6 @@ package com.unidev.polydata.changes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.mongodb.MongoClient;
 import com.unidev.changesexecutor.model.AbstractChange;
 import com.unidev.changesexecutor.model.ChangeContext;

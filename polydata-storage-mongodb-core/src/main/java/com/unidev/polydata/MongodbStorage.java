@@ -69,13 +69,15 @@ public class MongodbStorage {
         return Optional.of(basicPoly);
     }
 
+    public static final String TAGS_COLLECTION = "tags";
+    public static final String TAG_INDEX_COLLECTION = "tagindex";
 
     public MongoCollection<Document> fetchTagsCollection(String poly) {
-        return mongoClient.getDatabase(database).getCollection(poly + ".tags");
+        return mongoClient.getDatabase(database).getCollection(poly + "." + TAGS_COLLECTION);
     }
 
     public MongoCollection<Document> fetchTagIndexCollection(String poly, String tagIndex) {
-        return mongoClient.getDatabase(database).getCollection(poly + ".tagindex." + tagIndex);
+        return mongoClient.getDatabase(database).getCollection(poly + "." + TAG_INDEX_COLLECTION + "." + tagIndex);
     }
 
 
