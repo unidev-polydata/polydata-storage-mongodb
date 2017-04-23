@@ -2,12 +2,12 @@ package com.unidev.polydata.changes;
 
 
 import com.mongodb.MongoClient;
-import com.unidev.changesexecutor.model.AbstractChange;
-import com.unidev.changesexecutor.model.Change;
 import com.unidev.changesexecutor.model.ChangeContext;
 import com.unidev.changesexecutor.model.ChangeExecutionResult;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -27,14 +27,19 @@ public class MongoChangesResultStorageTest {
     public void testStorage() {
         String id = "Change " + System.currentTimeMillis();
         assertThat(changesResultStorage.existChangeResult(id), is(false));
-        Change change = new MongodbChange(666, id) {
+
+        Collection<ChangeExecutionResult> changeExecutionResults = changesResultStorage.listResults();
+        assertThat(changeExecutionResults, is(notNullValue()));
+
+
+        MongodbChange change = new MongodbChange(666, id) {
             @Override
             public void execute(ChangeContext changeContext) {
 
             }
         };
 
-        ChangeExecutionResult changeExecutionResult = new ChangeExecutionResult(change, ChangeExecutionResult.Result.SUCCESS, "Test result");
+        MongobChangeExecutionResult changeExecutionResult = new MongobChangeExecutionResult(change, ChangeExecutionResult.Result.SUCCESS, "Test result");
 
         changesResultStorage.persistResult(changeExecutionResult);
 
@@ -42,6 +47,10 @@ public class MongoChangesResultStorageTest {
 
         ChangeExecutionResult result = changesResultStorage.fetchResult(id);
         assertThat(result, is(notNullValue()));
+
+        Collection<ChangeExecutionResult> updatedResultList = changesResultStorage.listResults();
+        assertThat(updatedResultList, is(notNullValue()));
+        assertThat(updatedResultList.size(), is(changeExecutionResults.size() + 1));
     }
 
 }
