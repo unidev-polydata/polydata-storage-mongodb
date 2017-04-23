@@ -1,5 +1,7 @@
 package com.unidev.polydata.changes;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.mongodb.MongoClient;
 import com.unidev.changesexecutor.model.AbstractChange;
@@ -15,7 +17,8 @@ public class MongodbChange extends AbstractChange {
     public static final String DOCUMENT_KEY = "database";
     public static final String COLLECTION_KEY = "collection";
 
-    public MongodbChange(long changeOrder, String changeName) {
+    @JsonCreator
+    public MongodbChange(@JsonProperty("changeOrder") long changeOrder, @JsonProperty("changeName") String changeName) {
         super(changeOrder, changeName);
     }
 

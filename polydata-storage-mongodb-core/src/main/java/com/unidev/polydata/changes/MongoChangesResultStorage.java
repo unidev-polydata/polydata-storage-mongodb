@@ -86,10 +86,10 @@ public class MongoChangesResultStorage implements ChangeResultStorage {
         }
     }
 
-    private ChangeExecutionResult documentToChangeResult(Document document) {
+    private MongobChangeExecutionResult documentToChangeResult(Document document) {
         try {
             String json = OBJECT_MAPPER.writeValueAsString(document);
-            return OBJECT_MAPPER.readValue(json, ChangeExecutionResult.class);
+            return OBJECT_MAPPER.readValue(json, MongobChangeExecutionResult.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -9,6 +9,10 @@ import com.unidev.changesexecutor.model.ChangeExecutionResult;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 public class MongoChangesResultStorageTest {
 
     MongoChangesResultStorage changesResultStorage;
@@ -21,8 +25,9 @@ public class MongoChangesResultStorageTest {
 
     @Test
     public void testStorage() {
-
-        Change change = new AbstractChange(666, "Test Change") {
+        String id = "Change " + System.currentTimeMillis();
+        assertThat(changesResultStorage.existChangeResult(id), is(false));
+        Change change = new MongodbChange(666, id) {
             @Override
             public void execute(ChangeContext changeContext) {
 
@@ -33,6 +38,10 @@ public class MongoChangesResultStorageTest {
 
         changesResultStorage.persistResult(changeExecutionResult);
 
+        assertThat(changesResultStorage.existChangeResult(id), is(true));
+
+        ChangeExecutionResult result = changesResultStorage.fetchResult(id);
+        assertThat(result, is(notNullValue()));
     }
 
 }
