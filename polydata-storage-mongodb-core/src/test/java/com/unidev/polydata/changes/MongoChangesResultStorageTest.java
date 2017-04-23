@@ -39,7 +39,7 @@ public class MongoChangesResultStorageTest {
             }
         };
 
-        MongobChangeExecutionResult changeExecutionResult = new MongobChangeExecutionResult(change, ChangeExecutionResult.Result.SUCCESS, "Test result");
+        MongodbChangeExecutionResult changeExecutionResult = new MongodbChangeExecutionResult(change, ChangeExecutionResult.Result.SUCCESS, "Test result");
 
         changesResultStorage.persistResult(changeExecutionResult);
 
