@@ -4,6 +4,7 @@ package com.unidev.polydata.changes;
 import com.mongodb.MongoClient;
 import com.unidev.changesexecutor.model.ChangeContext;
 import com.unidev.changesexecutor.model.ChangeExecutionResult;
+import com.unidev.polydata.MongodbStorage;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,7 +20,7 @@ public class MongoChangesResultStorageTest {
 
     @Before
     public void init() {
-        MongoClient mongoClient = new MongoClient("mongodb1.prod.unidev");
+        MongoClient mongoClient = new MongoClient("mongodb-dev");
         changesResultStorage = new MongoChangesResultStorage(mongoClient, "polydata-storage-test", "test-changes");
     }
 
