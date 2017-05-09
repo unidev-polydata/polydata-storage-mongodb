@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 public class MongodbStorageTest {
@@ -36,8 +37,11 @@ public class MongodbStorageTest {
     }
 
     @Test
-    public void testPolyPersisting() {
+    public void testPolyRecordsOperations() {
         String id = "qwe_" + System.currentTimeMillis();
+
+        boolean notExisting = mongodbStorage.existPoly("tomato", id);
+        assertThat(notExisting, is(false));
 
         Optional<BasicPoly> basicPoly = mongodbStorage.fetchPoly("tomato", id);
         assertFalse(basicPoly.isPresent());
@@ -47,8 +51,21 @@ public class MongodbStorageTest {
 
         mongodbStorage.save("tomato", polyToSave);
 
+        boolean existing = mongodbStorage.existPoly("tomato", id);
+        assertThat(existing, is(true));
+
         Optional<BasicPoly> basicPoly2 = mongodbStorage.fetchPoly("tomato", id);
         assertTrue(basicPoly2.isPresent());
+
+        boolean result = mongodbStorage.removePoly("tomato", id);
+        assertThat(result, is(true));
+
+        boolean falseRemovalResult = mongodbStorage.removePoly("tomato", id);
+        assertThat(falseRemovalResult, is(false));
+
+        boolean falseResultForRemovedPoly = mongodbStorage.existPoly("tomato", id);
+        assertThat(falseResultForRemovedPoly, is(false));
     }
+
 
 }

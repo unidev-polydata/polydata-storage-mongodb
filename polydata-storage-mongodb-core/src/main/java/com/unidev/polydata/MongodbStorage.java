@@ -69,6 +69,24 @@ public class MongodbStorage {
         return Optional.of(basicPoly);
     }
 
+    public boolean existPoly(String poly, String id) {
+        MongoCollection<Document> collection = fetchCollection(poly);
+        long count = collection.count(eq("_id", id));
+        if (count == 0) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean removePoly(String poly, String id) {
+        if(!existPoly(poly, id)) {
+            return false;
+        }
+        MongoCollection<Document> collection = fetchCollection(poly);
+        collection.deleteOne(eq("_id", id));
+        return true;
+    }
+
     public static final String TAGS_COLLECTION = "tags";
     public static final String TAG_INDEX_COLLECTION = "tagindex";
 
