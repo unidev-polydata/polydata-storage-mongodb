@@ -50,7 +50,7 @@ public abstract class AbstractPolyStorage {
     return Optional.ofNullable(document);
   }
 
-  public boolean removePoly(MongoCollection<Document> collection, String id) {
+  protected boolean removePoly(MongoCollection<Document> collection, String id) {
     return !exist(collection, id) && collection.deleteOne(eq("_id", id)).wasAcknowledged();
   }
 
