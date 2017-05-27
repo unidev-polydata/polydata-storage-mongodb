@@ -8,10 +8,10 @@ import org.bson.Document;
  */
 public class PolyInfo extends BasicPoly {
 
-    public PolyInfo() {
-    }
+  public PolyInfo() {
+  }
 
-    public PolyInfo(Document document) {
-        super.putAll(document);
-    }
+  public PolyInfo(Document document) {
+    super.putAll(document);
+  }
 }

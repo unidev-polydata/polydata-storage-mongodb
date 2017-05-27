@@ -10,19 +10,20 @@ import org.bson.Document;
 
 public class TagsCountIndex extends MongodbChange {
 
-    public TagsCountIndex() {
-        super(100L, "tag-count-index");
-    }
+  public TagsCountIndex() {
+    super(100L, "tag-count-index");
+  }
 
-    @Override
-    public void execute(ChangeContext changeContext) {
+  @Override
+  public void execute(ChangeContext changeContext) {
 
-        MongoClient mongoClient = fetchMongoClient(changeContext);
-        String database = fetchDatabase(changeContext);
+    MongoClient mongoClient = fetchMongoClient(changeContext);
+    String database = fetchDatabase(changeContext);
 
-        MongoCollection<Document> collection = mongoClient.getDatabase(database).getCollection(MongodbStorage.TAGS_COLLECTION);
-        Document index = new Document();
-        index.put("count", 1);
-        collection.createIndex(index);
-    }
+    MongoCollection<Document> collection = mongoClient.getDatabase(database)
+        .getCollection(MongodbStorage.TAGS_COLLECTION);
+    Document index = new Document();
+    index.put("count", 1);
+    collection.createIndex(index);
+  }
 }

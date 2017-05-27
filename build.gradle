@@ -16,8 +16,6 @@ subprojects {
     apply from: 'http://dev.local/gradle/defaultRepositories.groovy'
     apply from: 'http://dev.local/gradle/javadoc.groovy'
 
-    
-
     dependencies {
         // test dependencies
         testCompile 'junit:junit:4.12'
