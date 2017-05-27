@@ -1,11 +1,7 @@
 package com.unidev.polydata;
 
 
-import static com.mongodb.client.model.Filters.eq;
-
 import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import org.bson.Document;
 
 
 /**
@@ -13,44 +9,44 @@ import org.bson.Document;
  */
 public class MongodbStorage {
 
-  public static final String TAGS_COLLECTION = "tags";
-  public static final String TAG_INDEX_COLLECTION = "tagindex";
-
+  private final PolyInfoStorage polyInfoStorage;
+  private final PolyRecordStorage polyRecordStorage;
+  private final TagStorage tagStorage;
+  private final TagIndexStorage tagIndexStorage;
   private MongoClient mongoClient;
   private String database;
-
-  private PolyInfoStorage polyInfoStorage;
-  private PolyRecordStorage polyDataStorage;
 
   public MongodbStorage(MongoClient mongoClient, String database) {
     this.mongoClient = mongoClient;
     this.database = database;
 
     this.polyInfoStorage = new PolyInfoStorage(mongoClient, database);
-    this.polyDataStorage = new PolyRecordStorage(mongoClient, database);
+    this.polyRecordStorage = new PolyRecordStorage(mongoClient, database);
+    this.tagStorage = new TagStorage(mongoClient, database);
+    this.tagIndexStorage = new TagIndexStorage(mongoClient, database);
   }
 
-  public boolean existTag(String tagId) {
-    MongoCollection<Document> tagsCollection = fetchTagsCollection(tagId);
-    return exist(tagsCollection, tagId);
+  public MongoClient getMongoClient() {
+    return mongoClient;
   }
 
-  boolean exist(MongoCollection<Document> collection, String id) {
-    long count = collection.count(eq("_id", id));
-    if (count == 0) {
-      return false;
-    }
-    return true;
+  public String getDatabase() {
+    return database;
   }
 
-  public MongoCollection<Document> fetchTagsCollection(String poly) {
-    return mongoClient.getDatabase(database).getCollection(poly + "." + TAGS_COLLECTION);
+  public PolyInfoStorage getPolyInfoStorage() {
+    return polyInfoStorage;
   }
 
-  public MongoCollection<Document> fetchTagIndexCollection(String poly, String tagIndex) {
-    return mongoClient.getDatabase(database)
-        .getCollection(poly + "." + TAG_INDEX_COLLECTION + "." + tagIndex);
+  public PolyRecordStorage getPolyRecordStorage() {
+    return polyRecordStorage;
   }
 
+  public TagStorage getTagStorage() {
+    return tagStorage;
+  }
 
+  public TagIndexStorage getTagIndexStorage() {
+    return tagIndexStorage;
+  }
 }
