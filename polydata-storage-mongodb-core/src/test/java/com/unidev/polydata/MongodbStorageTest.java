@@ -26,14 +26,15 @@ public class MongodbStorageTest {
   @Test
   public void testPolyInfoFetching() {
     String randomId = "potato_" + System.currentTimeMillis();
-    Optional<PolyInfo> tomato = mongodbStorage.polyInfo(randomId);
+    PolyInfoStorage polyInfoStorage = mongodbStorage.getPolyInfoStorage();
+    Optional<PolyInfo> tomato = polyInfoStorage.polyInfo(randomId);
     assertFalse(tomato.isPresent());
 
     PolyInfo polyInfo = new PolyInfo();
     polyInfo._id(randomId);
-    mongodbStorage.savePolyInfo(polyInfo);
+    mongodbStorage.getPolyInfoStorage().savePolyInfo(polyInfo);
 
-    Optional<PolyInfo> polyInfoById = mongodbStorage.polyInfo(randomId);
+    Optional<PolyInfo> polyInfoById = polyInfoStorage.polyInfo(randomId);
     assertTrue(polyInfoById.isPresent());
     assertEquals(randomId, polyInfoById.get()._id());
   }
@@ -41,31 +42,31 @@ public class MongodbStorageTest {
   @Test
   public void testPolyRecordsOperations() {
     String id = "qwe_" + System.currentTimeMillis();
-
-    boolean notExisting = mongodbStorage.existPoly("tomato", id);
+    PolyRecordStorage polyRecordStorage = mongodbStorage.getPolyRecordStorage();
+    boolean notExisting = polyRecordStorage.existPoly("tomato", id);
     assertThat(notExisting, is(false));
 
-    Optional<BasicPoly> basicPoly = mongodbStorage.fetchPoly("tomato", id);
+    Optional<BasicPoly> basicPoly = polyRecordStorage.fetchPoly("tomato", id);
     assertFalse(basicPoly.isPresent());
 
     BasicPoly polyToSave = new BasicPoly();
     polyToSave._id(id);
 
-    mongodbStorage.save("tomato", polyToSave);
+    polyRecordStorage.save("tomato", polyToSave);
 
-    boolean existing = mongodbStorage.existPoly("tomato", id);
+    boolean existing = polyRecordStorage.existPoly("tomato", id);
     assertThat(existing, is(true));
 
-    Optional<BasicPoly> basicPoly2 = mongodbStorage.fetchPoly("tomato", id);
+    Optional<BasicPoly> basicPoly2 = polyRecordStorage.fetchPoly("tomato", id);
     assertTrue(basicPoly2.isPresent());
 
-    boolean result = mongodbStorage.removePoly("tomato", id);
+    boolean result = polyRecordStorage.removePoly("tomato", id);
     assertThat(result, is(true));
 
-    boolean falseRemovalResult = mongodbStorage.removePoly("tomato", id);
+    boolean falseRemovalResult = polyRecordStorage.removePoly("tomato", id);
     assertThat(falseRemovalResult, is(false));
 
-    boolean falseResultForRemovedPoly = mongodbStorage.existPoly("tomato", id);
+    boolean falseResultForRemovedPoly = polyRecordStorage.existPoly("tomato", id);
     assertThat(falseResultForRemovedPoly, is(false));
   }
 

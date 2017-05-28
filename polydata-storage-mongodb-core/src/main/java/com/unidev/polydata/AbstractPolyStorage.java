@@ -4,6 +4,7 @@ import static com.mongodb.client.model.Filters.eq;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.result.DeleteResult;
 import com.unidev.polydata.domain.BasicPoly;
 import java.util.Optional;
 import org.bson.Document;
@@ -23,10 +24,7 @@ public abstract class AbstractPolyStorage {
 
   protected boolean exist(MongoCollection<Document> collection, String id) {
     long count = collection.count(eq("_id", id));
-    if (count == 0) {
-      return false;
-    }
-    return true;
+    return count != 0;
   }
 
   protected BasicPoly save(MongoCollection<Document> collection, BasicPoly basicPoly) {
@@ -51,7 +49,11 @@ public abstract class AbstractPolyStorage {
   }
 
   protected boolean removePoly(MongoCollection<Document> collection, String id) {
-    return !exist(collection, id) && collection.deleteOne(eq("_id", id)).wasAcknowledged();
+    if (!exist(collection, id)) {
+      return false;
+    }
+    DeleteResult deleteResult = collection.deleteOne(eq("_id", id));
+    return deleteResult.getDeletedCount() == 1L;
   }
 
 }

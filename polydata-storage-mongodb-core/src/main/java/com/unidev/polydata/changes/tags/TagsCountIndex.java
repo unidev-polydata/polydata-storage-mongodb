@@ -4,7 +4,7 @@ package com.unidev.polydata.changes.tags;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.unidev.changesexecutor.model.ChangeContext;
-import com.unidev.polydata.MongodbStorage;
+import com.unidev.polydata.TagStorage;
 import com.unidev.polydata.changes.MongodbChange;
 import org.bson.Document;
 
@@ -21,7 +21,7 @@ public class TagsCountIndex extends MongodbChange {
     String database = fetchDatabase(changeContext);
 
     MongoCollection<Document> collection = mongoClient.getDatabase(database)
-        .getCollection(MongodbStorage.TAGS_COLLECTION);
+        .getCollection(TagStorage.TAGS_COLLECTION);
     Document index = new Document();
     index.put("count", 1);
     collection.createIndex(index);
