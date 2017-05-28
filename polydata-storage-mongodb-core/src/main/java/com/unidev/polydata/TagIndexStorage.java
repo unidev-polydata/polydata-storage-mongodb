@@ -42,5 +42,9 @@ public class TagIndexStorage extends AbstractPolyStorage {
     return removePoly(collection, id);
   }
 
+  protected void migrate(String poly) {
+
+  }
+
 
 }

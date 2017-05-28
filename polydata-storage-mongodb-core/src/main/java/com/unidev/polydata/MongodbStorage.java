@@ -26,6 +26,13 @@ public class MongodbStorage {
     this.tagIndexStorage = new TagIndexStorage(mongoClient, database);
   }
 
+  public void migrate(String poly) {
+    polyInfoStorage.migrate(poly);
+    polyRecordStorage.migrate(poly);
+    tagStorage.migrate(poly);
+    tagIndexStorage.migrate(poly);
+  }
+
   public MongoClient getMongoClient() {
     return mongoClient;
   }

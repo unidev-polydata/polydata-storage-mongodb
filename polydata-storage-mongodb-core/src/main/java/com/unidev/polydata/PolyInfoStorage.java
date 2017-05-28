@@ -31,4 +31,8 @@ public class PolyInfoStorage extends AbstractPolyStorage {
     return polyInfo;
   }
 
+  protected void migrate(String poly) {
+
+  }
+
 }

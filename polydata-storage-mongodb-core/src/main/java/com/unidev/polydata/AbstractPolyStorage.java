@@ -22,6 +22,8 @@ public abstract class AbstractPolyStorage {
     this.mongoDatabase = mongoDatabase;
   }
 
+  protected abstract void migrate(String poly);
+
   protected boolean exist(MongoCollection<Document> collection, String id) {
     long count = collection.count(eq("_id", id));
     return count != 0;

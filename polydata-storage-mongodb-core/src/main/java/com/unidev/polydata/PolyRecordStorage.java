@@ -39,4 +39,8 @@ public class PolyRecordStorage extends AbstractPolyStorage {
     return removePoly(collection, id);
   }
 
+  protected void migrate(String poly) {
+
+  }
+
 }

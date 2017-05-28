@@ -70,5 +70,16 @@ public class MongodbStorageTest {
     assertThat(falseResultForRemovedPoly, is(false));
   }
 
+  @Test
+  public void testTags() {
+    String id = "tag_" + System.currentTimeMillis();
+    String poly = "tomato";
+
+    mongodbStorage.migrate(poly);
+
+    TagStorage tagStorage = mongodbStorage.getTagStorage();
+    //tagStorage.
+  }
+
 
 }
