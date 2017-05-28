@@ -9,17 +9,20 @@ import static org.junit.Assert.assertTrue;
 
 import com.mongodb.MongoClient;
 import com.unidev.polydata.domain.BasicPoly;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
 public class MongodbStorageTest {
 
   MongodbStorage mongodbStorage;
+  MongoClient mongoClient;
 
   @Before
   public void init() {
-    MongoClient mongoClient = new MongoClient("mongodb-dev");
+    mongoClient = new MongoClient("mongodb-dev");
     mongodbStorage = new MongodbStorage(mongoClient, "polydata-storage-test");
   }
 
@@ -71,14 +74,50 @@ public class MongodbStorageTest {
   }
 
   @Test
-  public void testTags() {
-    String id = "tag_" + System.currentTimeMillis();
-    String poly = "tomato";
+  public void testTagsOperations() {
+    String poly = "tomato_" + new Random().nextInt(256);
 
     mongodbStorage.migrate(poly);
 
     TagStorage tagStorage = mongodbStorage.getTagStorage();
-    //tagStorage.
+
+    List<BasicPoly> emptyTagList = tagStorage.listTags(poly);
+    assertThat(emptyTagList.size(), is(0));
+
+    BasicPoly tag1 = BasicPoly.newPoly("tag1");
+    BasicPoly tag1_1 = BasicPoly.newPoly("tag1");
+    BasicPoly tag2 = BasicPoly.newPoly("tag2");
+
+    tagStorage.addTag(poly, tag1);
+    tagStorage.addTag(poly, tag1_1);
+    tagStorage.addTag(poly, tag2);
+
+    List<BasicPoly> tags = tagStorage.listTags(poly);
+    assertThat(tags.size(), is(2));
+
+    Optional<BasicPoly> optionalDbTag1 = tagStorage.fetchPoly(poly, "tag1");
+    assertThat(optionalDbTag1.isPresent(), is(true));
+    BasicPoly dbTag1 = optionalDbTag1.get();
+    assertThat(dbTag1.fetch(TagStorage.COUNT_KEY), is(2));
+
+    Optional<BasicPoly> optionalDbTag2 = tagStorage.fetchPoly(poly, "tag2");
+    assertThat(optionalDbTag2.isPresent(), is(true));
+    BasicPoly dbTag2 = optionalDbTag2.get();
+    assertThat(dbTag2.fetch(TagStorage.COUNT_KEY), is(1));
+
+    tagStorage.removeTag(poly, "tag1");
+
+    optionalDbTag1 = tagStorage.fetchPoly(poly, "tag1");
+    assertThat(optionalDbTag1.isPresent(), is(true));
+    dbTag1 = optionalDbTag1.get();
+    assertThat(dbTag1.fetch(TagStorage.COUNT_KEY), is(1));
+
+    tagStorage.removeTag(poly, "tag1");
+
+    optionalDbTag1 = tagStorage.fetchPoly(poly, "tag1");
+    assertThat(optionalDbTag1.isPresent(), is(false));
+
+    tagStorage.fetchCollection(poly).drop();
   }
 
 

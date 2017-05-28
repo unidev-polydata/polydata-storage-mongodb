@@ -75,7 +75,7 @@ public class TagStorage extends AbstractPolyStorage {
     int count = storedTag.fetch(COUNT_KEY, 1);
     storedTag.putAll(tag);
     storedTag.put(COUNT_KEY, count + 1);
-    return save(poly, storedTag);
+    return update(poly, storedTag);
   }
 
   /**
@@ -96,7 +96,7 @@ public class TagStorage extends AbstractPolyStorage {
       removePoly(poly, id);
       return Optional.of(storedTag);
     }
-    return Optional.of(save(poly, storedTag));
+    return Optional.of(update(poly, storedTag));
 
   }
 
@@ -108,6 +108,11 @@ public class TagStorage extends AbstractPolyStorage {
   protected BasicPoly save(String poly, BasicPoly basicPoly) {
     MongoCollection<Document> collection = fetchCollection(poly);
     return save(collection, basicPoly);
+  }
+
+  protected BasicPoly update(String poly, BasicPoly basicPoly) {
+    MongoCollection<Document> collection = fetchCollection(poly);
+    return update(collection, basicPoly);
   }
 
   public Optional<BasicPoly> fetchPoly(String poly, String id) {
