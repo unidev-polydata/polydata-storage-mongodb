@@ -41,6 +41,14 @@ public abstract class AbstractPolyStorage {
     return basicPoly;
   }
 
+  protected BasicPoly saveOrUpdate(MongoCollection<Document> collection, BasicPoly basicPoly) {
+    if (exist(collection, basicPoly._id())) {
+      return update(collection, basicPoly);
+    }
+    return save(collection, basicPoly);
+  }
+
+
   protected Optional<BasicPoly> fetchPoly(MongoCollection<Document> collection, String id) {
     Document document = collection.find(eq("_id", id)).first();
     if (document == null) {

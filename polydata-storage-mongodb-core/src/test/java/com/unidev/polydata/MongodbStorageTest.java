@@ -120,5 +120,28 @@ public class MongodbStorageTest {
     tagStorage.fetchCollection(poly).drop();
   }
 
+  @Test
+  public void testTagIndexOperations() {
+      String poly = "tomato_" + new Random().nextInt(256);
+      mongodbStorage.migrate(poly);
+
+      String tagIndex = "test_tag";
+      String id = "_id";
+      TagIndexStorage tagIndexStorage = mongodbStorage.getTagIndexStorage();
+      assertThat(tagIndexStorage.exist( poly, tagIndex, id), is(false));
+
+      BasicPoly savedPolyIndex = BasicPoly.newPoly(id);
+      savedPolyIndex.put("key", "value");
+      tagIndexStorage.save(poly, tagIndex, savedPolyIndex);
+
+      Optional<BasicPoly> polyById = tagIndexStorage.fetchPoly(poly, tagIndex, id);
+      assertThat(polyById.isPresent(), is(true));
+
+      BasicPoly basicPoly = polyById.get();
+      assertThat(basicPoly._id(), is(id));
+      assertThat(basicPoly.get("key"), is("value"));
+
+  }
+
 
 }
