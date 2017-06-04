@@ -171,7 +171,18 @@ public class MongodbStorageTest {
     assertThat(polyRecord.isPresent(), is(true));
     assertThat(polyRecord.get().fetchTags().size(), is(3));
 
+    for (int iteration = 1; iteration <= 3; iteration++) {
+      mongodbStorage.removePoly(poly, "test" + iteration);
+    }
 
+    long polyCount = mongodbStorage.getPolyRecordStorage().fetchCollection(poly).count();
+    assertThat(polyCount, is(0L));
+
+    long countAfterRemove = mongodbStorage.getTagStorage().fetchCollection(poly).count();
+    assertThat(countAfterRemove, is(0L));
+
+    long tagIndexCount = mongodbStorage.getTagIndexStorage().fetchCollection(poly, "tag1").count();
+    assertThat(tagIndexCount, is(0L));
   }
 
 

@@ -17,6 +17,16 @@ public class PolyRecord extends BasicPoly {
 
   public PolyRecord(Document document) {
     super.putAll(document);
+    Collection<Document> rawTags = fetch(TAGS_KEY);
+    if (rawTags != null) {
+      Collection<BasicPoly> tags = new HashSet<>();
+      rawTags.forEach(rawTag -> {
+        BasicPoly basicPoly = new BasicPoly();
+        basicPoly.putAll(rawTag);
+        tags.add(basicPoly);
+      });
+      put(TAGS_KEY, tags);
+    }
   }
 
   public Collection<BasicPoly> fetchTags() {
