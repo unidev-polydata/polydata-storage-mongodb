@@ -23,7 +23,7 @@ public class TagsCountIndex extends MongodbChange {
     MongoCollection<Document> collection = mongoClient.getDatabase(database)
         .getCollection(TagStorage.TAGS_COLLECTION);
     Document index = new Document();
-    index.put("count", 1);
+    index.put(TagStorage.COUNT_KEY, 1);
     collection.createIndex(index);
   }
 }
