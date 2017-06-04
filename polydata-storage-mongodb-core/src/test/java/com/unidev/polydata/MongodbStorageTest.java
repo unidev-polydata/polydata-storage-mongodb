@@ -144,5 +144,35 @@ public class MongodbStorageTest {
 
   }
 
+  @Test
+  public void testPolyRecordPersisting() {
+    String poly = "polys_" + new Random().nextInt(256);
+    mongodbStorage.migrate(poly);
+
+    for (int iteration = 1; iteration <= 3; iteration++) {
+      PolyRecord polyRecord = new PolyRecord();
+      polyRecord._id("test" + iteration);
+      polyRecord.put("data", "testqwe");
+      polyRecord.addTag(BasicPoly.newPoly("tag" + iteration));
+      polyRecord.addTag(BasicPoly.newPoly("tag" + (iteration + 1)));
+
+      BasicPoly tag3 = BasicPoly.newPoly("tag" + (iteration + 2));
+      tag3.put("label", "Tag" + (iteration + 2));
+      polyRecord.addTag(tag3);
+
+      mongodbStorage.storePoly(poly, polyRecord);
+    }
+
+    long count = mongodbStorage.getTagStorage().fetchCollection(poly).count();
+    assertThat(count, is(5L));
+
+    Optional<PolyRecord> polyRecord = mongodbStorage.getPolyRecordStorage()
+        .fetchPoly(poly, "test1");
+    assertThat(polyRecord.isPresent(), is(true));
+    assertThat(polyRecord.get().fetchTags().size(), is(3));
+
+
+  }
+
 
 }

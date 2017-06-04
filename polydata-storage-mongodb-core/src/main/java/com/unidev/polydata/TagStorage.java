@@ -35,7 +35,7 @@ public class TagStorage extends AbstractPolyStorage {
     ChangeContext changeContext = new ChangeContext();
     changeContext.put(MongodbChange.MONGO_CLIENT_KEY, mongoClient);
     changeContext.put(MongodbChange.DATABASE_KEY, mongoDatabase);
-    changeContext.put(MongodbChange.COLLECTION_KEY, fetchCollection(poly));
+    changeContext.put(TagsCountIndex.COLLECTION_KEY, fetchCollection(poly));
 
     changesCore.executeChanges(changeContext);
 
