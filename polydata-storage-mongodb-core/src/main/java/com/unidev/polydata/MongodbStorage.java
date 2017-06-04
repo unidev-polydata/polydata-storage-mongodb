@@ -2,6 +2,7 @@ package com.unidev.polydata;
 
 
 import com.mongodb.MongoClient;
+import com.unidev.polydata.domain.BasicPoly;
 
 
 /**
@@ -32,6 +33,22 @@ public class MongodbStorage {
     tagStorage.migrate(poly);
     tagIndexStorage.migrate(poly);
   }
+
+  /**
+   * Store or update stored poly in polydata storage.
+   */
+  public void storePoly(String poly, BasicPoly basicPoly) {
+    throw new UnsupportedOperationException("Not implemented");
+  }
+
+  /**
+   * Remove poly from storage.
+   */
+  public void removePoly(String poly, String polyId) {
+    throw new UnsupportedOperationException("Not implemented");
+  }
+
+
 
   public MongoClient getMongoClient() {
     return mongoClient;
