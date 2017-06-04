@@ -3,6 +3,8 @@ package com.unidev.polydata;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.unidev.polydata.domain.BasicPoly;
+import java.util.Optional;
 import org.bson.Document;
 
 
@@ -11,7 +13,7 @@ import org.bson.Document;
  */
 public class MongodbStorage {
 
-  public static final String POLY_ID_KEY = "poly_id";
+  public static final String TAG_KEY = "tag_id";
   public static final String TAGS_KEY = "tags";
   public static final String TAGS_COLLECTION = "tags";
   public static final String COUNT_KEY = "count";
@@ -55,13 +57,32 @@ public class MongodbStorage {
     }
     getTagStorage().addTag(poly, polyRecord.fetchTags());
 
+    TagIndexStorage tagIndexStorage = getTagIndexStorage();
+    polyRecord.fetchTags().forEach(tag -> {
+      BasicPoly tagIndexRecord = BasicPoly.newPoly();
+      tagIndexRecord._id(polyRecord._id());
+      tagIndexRecord.put(TAG_KEY, tag);
+      tagIndexStorage.addPolyIndex(poly, tag._id(), tagIndexRecord);
+    });
   }
 
   /**
    * Remove poly from storage.
    */
   public void removePoly(String poly, String polyId) {
-    throw new UnsupportedOperationException("Not implemented");
+    Optional<PolyRecord> polyRecord = getPolyRecordStorage().fetchPoly(poly, polyId);
+    if (!polyRecord.isPresent()) {
+      return;
+    }
+    PolyRecord dbPolyRecord = polyRecord.get();
+    PolyRecordStorage polyRecordStorage = getPolyRecordStorage();
+    polyRecordStorage.removePoly(poly, polyId);
+    getTagStorage().removeTag(poly, dbPolyRecord.fetchTags());
+
+    TagIndexStorage tagIndexStorage = getTagIndexStorage();
+    dbPolyRecord.fetchTags().forEach(tag -> {
+      tagIndexStorage.removePolyIndex(poly, tag._id(), dbPolyRecord._id());
+    });
   }
 
 

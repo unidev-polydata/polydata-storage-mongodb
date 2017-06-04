@@ -24,9 +24,13 @@ public class PolyRecordStorage extends AbstractPolyStorage {
     return save(collection, basicPoly);
   }
 
-  public Optional<BasicPoly> fetchPoly(String poly, String id) {
+  public Optional<PolyRecord> fetchPoly(String poly, String id) {
     MongoCollection<Document> collection = fetchCollection(poly);
-    return fetchPoly(collection, id);
+    Optional<Document> document = fetchRawDocument(collection, id);
+    if (document.isPresent()) {
+      return Optional.of(new PolyRecord(document.get()));
+    }
+    return Optional.empty();
   }
 
   public boolean existPoly(String poly, String id) {

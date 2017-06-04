@@ -50,7 +50,7 @@ public class MongodbStorageTest {
     boolean notExisting = polyRecordStorage.existPoly("tomato", id);
     assertThat(notExisting, is(false));
 
-    Optional<BasicPoly> basicPoly = polyRecordStorage.fetchPoly("tomato", id);
+    Optional<PolyRecord> basicPoly = polyRecordStorage.fetchPoly("tomato", id);
     assertFalse(basicPoly.isPresent());
 
     BasicPoly polyToSave = new BasicPoly();
@@ -61,7 +61,7 @@ public class MongodbStorageTest {
     boolean existing = polyRecordStorage.existPoly("tomato", id);
     assertThat(existing, is(true));
 
-    Optional<BasicPoly> basicPoly2 = polyRecordStorage.fetchPoly("tomato", id);
+    Optional<PolyRecord> basicPoly2 = polyRecordStorage.fetchPoly("tomato", id);
     assertTrue(basicPoly2.isPresent());
 
     boolean result = polyRecordStorage.removePoly("tomato", id);
