@@ -2,13 +2,21 @@ package com.unidev.polydata;
 
 
 import com.mongodb.MongoClient;
-import com.unidev.polydata.domain.BasicPoly;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 
 
 /**
  * Storage for mongodb records
  */
 public class MongodbStorage {
+
+  public static final String POLY_ID_KEY = "poly_id";
+  public static final String TAGS_KEY = "tags";
+  public static final String TAGS_COLLECTION = "tags";
+  public static final String COUNT_KEY = "count";
+  public static final String TAG_INDEX_COLLECTION = "tagindex";
+  public static final String POLY_COLLECTION = "polys";
 
   private final PolyInfoStorage polyInfoStorage;
   private final PolyRecordStorage polyRecordStorage;
@@ -37,8 +45,16 @@ public class MongodbStorage {
   /**
    * Store or update stored poly in polydata storage.
    */
-  public void storePoly(String poly, BasicPoly basicPoly) {
-    throw new UnsupportedOperationException("Not implemented");
+  public void storePoly(String poly, PolyRecord polyRecord) {
+    PolyRecordStorage polyRecordStorage = getPolyRecordStorage();
+    if (polyRecordStorage.existPoly(poly, polyRecord._id())) {
+      MongoCollection<Document> collection = polyRecordStorage.fetchCollection(poly);
+      polyRecordStorage.update(collection, polyRecord);
+    } else {
+      polyRecordStorage.save(poly, polyRecord);
+    }
+    getTagStorage().addTag(poly, polyRecord.fetchTags());
+
   }
 
   /**
@@ -47,7 +63,6 @@ public class MongodbStorage {
   public void removePoly(String poly, String polyId) {
     throw new UnsupportedOperationException("Not implemented");
   }
-
 
 
   public MongoClient getMongoClient() {

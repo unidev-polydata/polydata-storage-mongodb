@@ -1,5 +1,7 @@
 package com.unidev.polydata;
 
+import static com.unidev.polydata.MongodbStorage.POLY_COLLECTION;
+
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import java.util.Optional;
@@ -9,8 +11,6 @@ import org.bson.Document;
  * Storage for polydata information records.
  */
 public class PolyInfoStorage extends AbstractPolyStorage {
-
-  public static final String POLY_COLLECTION = "polys";
 
   public PolyInfoStorage(MongoClient mongoClient, String mongoDatabase) {
     super(mongoClient, mongoDatabase);

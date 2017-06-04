@@ -1,5 +1,8 @@
 package com.unidev.polydata;
 
+import static com.unidev.polydata.MongodbStorage.COUNT_KEY;
+import static com.unidev.polydata.MongodbStorage.TAGS_COLLECTION;
+
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.unidev.changesexecutor.core.ChangesCore;
@@ -9,6 +12,7 @@ import com.unidev.polydata.changes.MongodbChange;
 import com.unidev.polydata.changes.tags.TagsCountIndex;
 import com.unidev.polydata.domain.BasicPoly;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.bson.Document;
@@ -17,10 +21,6 @@ import org.bson.Document;
  * Storage for tags
  */
 public class TagStorage extends AbstractPolyStorage {
-
-  public static final String TAGS_COLLECTION = "tags";
-
-  public static final String COUNT_KEY = "count";
 
   public TagStorage(MongoClient mongoClient, String mongoDatabase) {
     super(mongoClient, mongoDatabase);
@@ -78,6 +78,10 @@ public class TagStorage extends AbstractPolyStorage {
     return update(poly, storedTag);
   }
 
+  public void addTag(String poly, Collection<BasicPoly> tags) {
+    tags.forEach(tag -> addTag(poly, tag));
+  }
+
   /**
    * Remove tag from counting, decrementing tag count, if count reaches 0 - remove poly.
    *
@@ -98,6 +102,10 @@ public class TagStorage extends AbstractPolyStorage {
     }
     return Optional.of(update(poly, storedTag));
 
+  }
+
+  public void removeTag(String poly, Collection<BasicPoly> tags) {
+    tags.stream().map(tag -> tag._id()).forEach(id -> removeTag(poly, id));
   }
 
   public boolean exist(String poly, String id) {

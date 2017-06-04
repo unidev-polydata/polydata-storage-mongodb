@@ -1,5 +1,7 @@
 package com.unidev.polydata;
 
+import static com.unidev.polydata.MongodbStorage.TAG_INDEX_COLLECTION;
+
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.unidev.polydata.domain.BasicPoly;
@@ -11,7 +13,6 @@ import org.bson.Document;
  */
 public class TagIndexStorage extends AbstractPolyStorage {
 
-  public static final String TAG_INDEX_COLLECTION = "tagindex";
 
   public TagIndexStorage(MongoClient mongoClient, String mongoDatabase) {
     super(mongoClient, mongoDatabase);
