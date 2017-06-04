@@ -1,6 +1,7 @@
 package com.unidev.polydata;
 
 
+import static com.unidev.polydata.MongodbStorage.COUNT_KEY;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -98,19 +99,19 @@ public class MongodbStorageTest {
     Optional<BasicPoly> optionalDbTag1 = tagStorage.fetchPoly(poly, "tag1");
     assertThat(optionalDbTag1.isPresent(), is(true));
     BasicPoly dbTag1 = optionalDbTag1.get();
-    assertThat(dbTag1.fetch(TagStorage.COUNT_KEY), is(2));
+    assertThat(dbTag1.fetch(COUNT_KEY), is(2));
 
     Optional<BasicPoly> optionalDbTag2 = tagStorage.fetchPoly(poly, "tag2");
     assertThat(optionalDbTag2.isPresent(), is(true));
     BasicPoly dbTag2 = optionalDbTag2.get();
-    assertThat(dbTag2.fetch(TagStorage.COUNT_KEY), is(1));
+    assertThat(dbTag2.fetch(COUNT_KEY), is(1));
 
     tagStorage.removeTag(poly, "tag1");
 
     optionalDbTag1 = tagStorage.fetchPoly(poly, "tag1");
     assertThat(optionalDbTag1.isPresent(), is(true));
     dbTag1 = optionalDbTag1.get();
-    assertThat(dbTag1.fetch(TagStorage.COUNT_KEY), is(1));
+    assertThat(dbTag1.fetch(COUNT_KEY), is(1));
 
     tagStorage.removeTag(poly, "tag1");
 
@@ -132,7 +133,7 @@ public class MongodbStorageTest {
 
       BasicPoly savedPolyIndex = BasicPoly.newPoly(id);
       savedPolyIndex.put("key", "value");
-      tagIndexStorage.save(poly, tagIndex, savedPolyIndex);
+      tagIndexStorage.addPolyIndex(poly, tagIndex, savedPolyIndex);
 
       Optional<BasicPoly> polyById = tagIndexStorage.fetchPoly(poly, tagIndex, id);
       assertThat(polyById.isPresent(), is(true));
