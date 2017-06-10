@@ -10,7 +10,9 @@ import static org.junit.Assert.assertTrue;
 
 import com.mongodb.MongoClient;
 import com.unidev.polydata.domain.BasicPoly;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import org.junit.Before;
@@ -165,6 +167,14 @@ public class MongodbStorageTest {
 
     long count = mongodbStorage.getTagStorage().fetchCollection(poly).count();
     assertThat(count, is(5L));
+
+    Map<String, PolyRecord> recordMap = mongodbStorage.getPolyRecordStorage()
+        .fetchPoly(poly, Arrays.asList("test1", "test2", "test666"));
+    assertThat(recordMap.size(), is(2));
+    assertThat(recordMap.containsKey("test1"), is(true));
+    assertThat(recordMap.get("test1")._id(), is("test1"));
+    assertThat(recordMap.containsKey("test2"), is(true));
+    assertThat(recordMap.containsKey("test666"), is(false));
 
     Optional<PolyRecord> polyRecord = mongodbStorage.getPolyRecordStorage()
         .fetchPoly(poly, "test1");
