@@ -2,6 +2,11 @@ package com.unidev.polydata;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.unidev.changesexecutor.core.ChangesCore;
+import com.unidev.changesexecutor.model.ChangeContext;
+import com.unidev.polydata.changes.MongoChangesResultStorage;
+import com.unidev.polydata.changes.MongodbChange;
+import com.unidev.polydata.changes.generic.DateIndex;
 import com.unidev.polydata.domain.BasicPoly;
 import java.util.Optional;
 import org.bson.Document;
@@ -44,7 +49,17 @@ public class PolyRecordStorage extends AbstractPolyStorage {
   }
 
   protected void migrate(String poly) {
+    MongoChangesResultStorage mongoChangesResultStorage = new MongoChangesResultStorage(mongoClient,
+        mongoDatabase, poly + ".changes");
+    ChangesCore changesCore = new ChangesCore(mongoChangesResultStorage);
+    changesCore.addChange(new DateIndex());
 
+    ChangeContext changeContext = new ChangeContext();
+    changeContext.put(MongodbChange.MONGO_CLIENT_KEY, mongoClient);
+    changeContext.put(MongodbChange.DATABASE_KEY, mongoDatabase);
+    changeContext.put(MongodbChange.COLLECTION_KEY, fetchCollection(poly));
+
+    changesCore.executeChanges(changeContext);
   }
 
 }

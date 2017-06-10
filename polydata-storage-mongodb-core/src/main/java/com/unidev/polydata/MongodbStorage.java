@@ -17,6 +17,7 @@ public class MongodbStorage {
   public static final String TAGS_KEY = "tags";
   public static final String TAGS_COLLECTION = "tags";
   public static final String COUNT_KEY = "count";
+  public static final String DATE_KEY = "_date";
   public static final String TAG_INDEX_COLLECTION = "tagindex";
   public static final String POLY_COLLECTION = "polys";
 

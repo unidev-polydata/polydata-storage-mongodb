@@ -4,6 +4,11 @@ import static com.unidev.polydata.MongodbStorage.TAG_INDEX_COLLECTION;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.unidev.changesexecutor.core.ChangesCore;
+import com.unidev.changesexecutor.model.ChangeContext;
+import com.unidev.polydata.changes.MongoChangesResultStorage;
+import com.unidev.polydata.changes.MongodbChange;
+import com.unidev.polydata.changes.generic.DateIndex;
 import com.unidev.polydata.domain.BasicPoly;
 import java.util.Collection;
 import java.util.Optional;
@@ -30,6 +35,7 @@ public class TagIndexStorage extends AbstractPolyStorage {
   }
 
   public BasicPoly addPolyIndex(String poly, String tagIndex, BasicPoly basicPoly) {
+    migrate(poly, tagIndex);
     MongoCollection<Document> collection = fetchCollection(poly, tagIndex);
     if (exist(collection, basicPoly._id())) {
       return update(collection, basicPoly);
@@ -57,6 +63,20 @@ public class TagIndexStorage extends AbstractPolyStorage {
 
   protected void migrate(String poly) {
 
+  }
+
+  protected void migrate(String poly, String tagIndex) {
+    MongoChangesResultStorage mongoChangesResultStorage = new MongoChangesResultStorage(mongoClient,
+        mongoDatabase, poly + "." + TAG_INDEX_COLLECTION + "." + tagIndex + ".changes");
+    ChangesCore changesCore = new ChangesCore(mongoChangesResultStorage);
+    changesCore.addChange(new DateIndex());
+
+    ChangeContext changeContext = new ChangeContext();
+    changeContext.put(MongodbChange.MONGO_CLIENT_KEY, mongoClient);
+    changeContext.put(MongodbChange.DATABASE_KEY, mongoDatabase);
+    changeContext.put(MongodbChange.COLLECTION_KEY, fetchCollection(poly, tagIndex));
+
+    changesCore.executeChanges(changeContext);
   }
 
 
