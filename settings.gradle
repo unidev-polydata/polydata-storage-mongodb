@@ -1,2 +1,3 @@
 include "polydata-storage-mongodb-core"
+include "polydata-storage-mongodb-rest-api"
 
