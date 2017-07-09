@@ -4,12 +4,13 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.unidev.platform.j2ee.common.WebUtils;
-import com.unidev.polydata.api.PolyNotFoundException;
+import com.unidev.polydata.api.NotFoundException;
 import com.unidev.polydata.api.PolyQuery;
 import com.unidev.polydata.domain.BasicPoly;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class APICore {
 
     public PolyInfo fetchPolyInfo(String storageId) {
         return mongodbStorage.getPolyInfoStorage().polyInfo(storageId)
-            .orElseThrow(PolyNotFoundException::new);
+            .orElseThrow(NotFoundException::new);
     }
 
     public List<BasicPoly> fetchTags(String storageId) {
@@ -62,4 +63,7 @@ public class APICore {
     }
 
 
+    public Map<String, PolyRecord> fetchPoly(String poly, Collection<String> ids) {
+        return mongodbStorage.getPolyRecordStorage().fetchPoly(poly, ids);
+    }
 }
