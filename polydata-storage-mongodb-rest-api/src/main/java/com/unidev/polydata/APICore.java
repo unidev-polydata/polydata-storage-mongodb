@@ -19,7 +19,6 @@ import org.springframework.util.StringUtils;
 @Service
 public class APICore {
 
-    public static final String POLY_NAME_KEY = "poly";
     public static final int DEFAULT_ITEM_PER_PAGE = 30;
     public static final String ITEM_PER_PAGE_KEY = "item_per_page";
 
@@ -36,13 +35,13 @@ public class APICore {
 
     public List<BasicPoly> fetchTags(String storageId) {
         PolyInfo polyInfo = fetchPolyInfo(storageId);
-        String poly = polyInfo.fetch(POLY_NAME_KEY, "");
+        String poly = polyInfo.fetchPolyCollection();
         return mongodbStorage.getTagStorage().listTags(poly);
     }
 
     public Collection<PolyRecord> fetchRecords(String storageId, String tag, PolyQuery polyQuery) {
         PolyInfo polyInfo = fetchPolyInfo(storageId);
-        String poly = polyInfo.fetch(POLY_NAME_KEY, "");
+        String poly = polyInfo.fetchPolyCollection();
         int itemPerPage = polyInfo.fetch(ITEM_PER_PAGE_KEY, DEFAULT_ITEM_PER_PAGE);
 
         if (StringUtils.isEmpty(tag)) {
@@ -69,7 +68,7 @@ public class APICore {
 
     public Map<String, PolyRecord> fetchPoly(String storageId, Collection<String> ids) {
         PolyInfo polyInfo = fetchPolyInfo(storageId);
-        String poly = polyInfo.fetch(POLY_NAME_KEY, "");
+        String poly = polyInfo.fetchPolyCollection();
         return mongodbStorage.getPolyRecordStorage().fetchPoly(poly, ids);
     }
 }
