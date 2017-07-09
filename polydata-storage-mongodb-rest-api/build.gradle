@@ -1,6 +1,43 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.4.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
 dependencies {
+    compile("com.unidev.platform:unidev-strings:$project.unidevPlatformVersion")
+    compile("com.unidev.platform:unidev-j2ee:$project.unidevPlatformVersion")
+    compile("com.unidev.platform:unidev-exception:$project.unidevPlatformVersion")
+    compile("com.unidev.platform:unidev-dto:$project.unidevPlatformVersion")
 
     compile project(":polydata-storage-mongodb-core")
+
+    compile 'io.springfox:springfox-swagger2:2.6.1'
+    compile 'io.springfox:springfox-swagger-ui:2.6.1'
+
+    compile 'org.jminix:jminix:1.2.0'
+
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.boot:spring-boot-starter-hateoas')
+    compile('org.springframework.boot:spring-boot-starter-web')
+
+
 }
 
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Camden.SR3"
+        mavenBom "com.vaadin:vaadin-bom:7.7.5"
+    }
+}
