@@ -14,6 +14,10 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 
+springBoot {
+    executable = true
+}
+
 dependencies {
     compile("com.unidev.platform:unidev-strings:$project.unidevPlatformVersion")
     compile("com.unidev.platform:unidev-j2ee:$project.unidevPlatformVersion")
