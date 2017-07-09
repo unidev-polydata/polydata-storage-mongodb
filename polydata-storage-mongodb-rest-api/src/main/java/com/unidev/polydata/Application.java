@@ -17,6 +17,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class Application {
 
+  public static final String API_VERSION = "1";
+
   @Value("${polydata.mongodb}")
   private String polydataMongodbUri;
 
