@@ -4,9 +4,11 @@ package com.unidev.polydata.api;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.unidev.polydata.APICore;
 import com.unidev.polydata.APIPolyQuery;
+import com.unidev.polydata.Application;
 import com.unidev.polydata.PolyRecord;
 import com.unidev.polydata.model.HateoasResource;
 import java.util.List;
@@ -25,6 +27,21 @@ public class APIController {
 
     @Autowired
     private APICore apiCore;
+
+    @RequestMapping
+    public HateoasResource root() {
+
+        HateoasResource<Object> root = HateoasResource.builder().payload(
+            ImmutableMap.of("saas-support", "polydata@universal-development.com", "api",
+                Application.API_VERSION)
+        ).build();
+
+        HateoasResource resource = methodOn(APIController.class).root();
+        Link link = linkTo(resource).withSelfRel();
+        root.add(link);
+
+        return root;
+    }
 
     @RequestMapping("storage/{storageId}")
     public HateoasResource storageInfo(@PathVariable("storageId") String storageId) {
