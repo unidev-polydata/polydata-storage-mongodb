@@ -20,6 +20,8 @@ dependencies {
     compile("com.unidev.platform:unidev-exception:$project.unidevPlatformVersion")
     compile("com.unidev.platform:unidev-dto:$project.unidevPlatformVersion")
 
+    compileOnly "org.projectlombok:lombok:1.16.16"
+
     compile project(":polydata-storage-mongodb-core")
 
     compile 'io.springfox:springfox-swagger2:2.6.1'
