@@ -1,9 +1,12 @@
 package com.unidev.polydata;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.unidev.platform.j2ee.common.WebUtils;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import org.jminix.console.servlet.MiniConsoleServlet;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -17,6 +20,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableSwagger2
 public class Application implements ServletContextInitializer {
+
+  @Value("${polydata.mongodb}")
+  private String polydataMongodbUri;
 
   public static void main(String[] args) {
     SpringApplication.run(Application.class, args);
@@ -42,5 +48,11 @@ public class Application implements ServletContextInitializer {
         .build();
   }
 
+  @Bean
+  public MongodbStorage mongodbStorage() {
+    MongoClientURI mongoURI = new MongoClientURI(polydataMongodbUri);
+    MongoClient mongoClient = new MongoClient(mongoURI);
+    return new MongodbStorage(mongoClient, mongoURI.getDatabase());
+  }
 }
 
