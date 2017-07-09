@@ -1,13 +1,11 @@
 package com.unidev.polydata.api;
 
 
-import com.mongodb.client.MongoCollection;
 import com.unidev.polydata.APICore;
-import com.unidev.polydata.MongodbStorage;
 import com.unidev.polydata.PolyInfo;
+import com.unidev.polydata.PolyRecord;
 import com.unidev.polydata.domain.BasicPoly;
-import java.util.List;
-import org.bson.Document;
+import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,9 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class APIController {
 
     @Autowired
-    private MongodbStorage mongodbStorage;
-
-    @Autowired
     private APICore apiCore;
 
     @RequestMapping("storage/{storageId}")
@@ -31,20 +26,15 @@ public class APIController {
     }
 
     @RequestMapping("storage/{storageId}/tags")
-    public List<BasicPoly> storageTags(@PathVariable("storageId") String storageId) {
+    public Collection<BasicPoly> storageTags(@PathVariable("storageId") String storageId) {
         return apiCore.fetchTags(storageId);
     }
 
     @RequestMapping(value = "storage/{storageId}/tag/{tag}", method = RequestMethod.POST)
-    public List<BasicPoly> storageTagsRecords(@PathVariable("storageId") String storageId,
-        @PathVariable("tag") String tag, @RequestBody Query query) {
-        mongodbStorage.getPolyInfoStorage().polyInfo(storageId)
-            .orElseThrow(PolyNotFoundException::new);
+    public Collection<PolyRecord> storageTagsRecords(@PathVariable("storageId") String storageId,
+        @PathVariable("tag") String tag, @RequestBody PolyQuery query) {
 
-        MongoCollection<Document> collection = mongodbStorage.getTagIndexStorage()
-            .fetchCollection(storageId, tag);
-
-        return mongodbStorage.getTagStorage().listTags(storageId);
+        return apiCore.fetchRecords(storageId, tag, query);
     }
 
 }

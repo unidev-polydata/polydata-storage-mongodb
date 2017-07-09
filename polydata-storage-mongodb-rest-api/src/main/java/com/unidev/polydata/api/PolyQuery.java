@@ -10,10 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Query {
+public class PolyQuery {
 
-  private int offset;
-  private int limit;
-
+  private int page = 0;
 
 }
