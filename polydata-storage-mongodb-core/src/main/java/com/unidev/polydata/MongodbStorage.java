@@ -114,6 +114,17 @@ public class MongodbStorage {
         }
     }
 
+    public long countRecords(String poly, PolyQuery polyQuery) {
+        if (polyQuery.getTag() == null) {
+            MongoCollection<Document> collection = getPolyRecordStorage().fetchCollection(poly);
+            return collection.count();
+        } else {
+            MongoCollection<Document> collection = getTagIndexStorage()
+                .fetchCollection(poly, polyQuery.getTag());
+            return collection.count();
+        }
+    }
+
 
     public MongoClient getMongoClient() {
         return mongoClient;
