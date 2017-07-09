@@ -1,20 +1,13 @@
 package com.unidev.polydata;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
 import com.unidev.platform.j2ee.common.WebUtils;
 import com.unidev.polydata.api.NotFoundException;
-import com.unidev.polydata.api.PolyQuery;
 import com.unidev.polydata.domain.BasicPoly;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 public class APICore {
@@ -39,30 +32,19 @@ public class APICore {
         return mongodbStorage.getTagStorage().listTags(poly);
     }
 
-    public Collection<PolyRecord> fetchRecords(String storageId, String tag, PolyQuery polyQuery) {
+    public Collection<PolyRecord> fetchRecords(String storageId, String tag,
+        APIPolyQuery apiPolyQuery) {
+
         PolyInfo polyInfo = fetchPolyInfo(storageId);
         String poly = polyInfo.fetchPolyCollection();
         int itemPerPage = polyInfo.fetch(ITEM_PER_PAGE_KEY, DEFAULT_ITEM_PER_PAGE);
 
-        if (StringUtils.isEmpty(tag)) {
-            MongoCollection<Document> collection = mongodbStorage.getPolyRecordStorage()
-                .fetchCollection(poly);
-            FindIterable<Document> result = collection.find()
-                .sort(new BasicDBObject().append(MongodbStorage.DATE_KEY, -1)).skip(
-                    polyQuery.getPage() * itemPerPage).limit(itemPerPage);
-            List<PolyRecord> list = new ArrayList<>();
-            result.iterator().forEachRemaining(document -> list.add(new PolyRecord(document)));
-            return list;
-        } else {
-            MongoCollection<Document> collection = mongodbStorage.getTagIndexStorage()
-                .fetchCollection(poly, tag);
-            FindIterable<Document> result = collection.find()
-                .sort(new BasicDBObject().append(MongodbStorage.DATE_KEY, -1)).skip(
-                    polyQuery.getPage() * itemPerPage).limit(itemPerPage);
-            List<String> ids = new ArrayList<>();
-            result.iterator().forEachRemaining(document -> ids.add(document.get("_id") + ""));
-            return mongodbStorage.getPolyRecordStorage().fetchPoly(poly, ids).values();
-        }
+        PolyQuery polyQuery = new PolyQuery();
+        polyQuery.setTag(tag);
+        polyQuery.setItemPerPage(itemPerPage);
+        polyQuery.setPage(apiPolyQuery.getPage());
+
+        return mongodbStorage.fetchRecords(poly, polyQuery);
     }
 
 

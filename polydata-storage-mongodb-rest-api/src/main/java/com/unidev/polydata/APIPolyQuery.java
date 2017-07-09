@@ -1,5 +1,4 @@
-package com.unidev.polydata.api;
-
+package com.unidev.polydata;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,8 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PolyQuery {
+public class APIPolyQuery {
 
-  private int page = 0;
+    private int page = 0;
 
 }
+

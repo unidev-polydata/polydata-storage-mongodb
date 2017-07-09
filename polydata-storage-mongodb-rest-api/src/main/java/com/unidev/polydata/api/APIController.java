@@ -3,6 +3,7 @@ package com.unidev.polydata.api;
 
 import com.google.common.collect.ImmutableSet;
 import com.unidev.polydata.APICore;
+import com.unidev.polydata.APIPolyQuery;
 import com.unidev.polydata.PolyInfo;
 import com.unidev.polydata.PolyRecord;
 import com.unidev.polydata.domain.BasicPoly;
@@ -35,13 +36,13 @@ public class APIController {
 
     @PostMapping(value = "storage/{storageId}/query")
     public Collection<PolyRecord> queryStorage(@PathVariable("storageId") String storageId,
-        @RequestBody PolyQuery query) {
+        @RequestBody APIPolyQuery query) {
         return apiCore.fetchRecords(storageId, null, query);
     }
 
     @PostMapping(value = "storage/{storageId}/tag/{tag}")
     public Collection<PolyRecord> storageTagsRecords(@PathVariable("storageId") String storageId,
-        @PathVariable("tag") String tag, @RequestBody PolyQuery query) {
+        @PathVariable("tag") String tag, @RequestBody APIPolyQuery query) {
         return apiCore.fetchRecords(storageId, tag, query);
     }
 
