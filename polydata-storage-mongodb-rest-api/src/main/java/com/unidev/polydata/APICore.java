@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 @Service
 public class APICore {
 
+    public static final String POLY_NAME_KEY = "poly";
     public static final int DEFAULT_ITEM_PER_PAGE = 30;
     public static final String ITEM_PER_PAGE_KEY = "item_per_page";
 
@@ -30,15 +31,18 @@ public class APICore {
 
     public PolyInfo fetchPolyInfo(String storageId) {
         return mongodbStorage.getPolyInfoStorage().polyInfo(storageId)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("Not found storage " + storageId));
     }
 
     public List<BasicPoly> fetchTags(String storageId) {
-        return mongodbStorage.getTagStorage().listTags(storageId);
+        PolyInfo polyInfo = fetchPolyInfo(storageId);
+        String poly = polyInfo.fetch(POLY_NAME_KEY, "");
+        return mongodbStorage.getTagStorage().listTags(poly);
     }
 
-    public Collection<PolyRecord> fetchRecords(String poly, String tag, PolyQuery polyQuery) {
-        PolyInfo polyInfo = fetchPolyInfo(poly);
+    public Collection<PolyRecord> fetchRecords(String storageId, String tag, PolyQuery polyQuery) {
+        PolyInfo polyInfo = fetchPolyInfo(storageId);
+        String poly = polyInfo.fetch(POLY_NAME_KEY, "");
         int itemPerPage = polyInfo.fetch(ITEM_PER_PAGE_KEY, DEFAULT_ITEM_PER_PAGE);
 
         if (StringUtils.isEmpty(tag)) {
@@ -63,7 +67,9 @@ public class APICore {
     }
 
 
-    public Map<String, PolyRecord> fetchPoly(String poly, Collection<String> ids) {
+    public Map<String, PolyRecord> fetchPoly(String storageId, Collection<String> ids) {
+        PolyInfo polyInfo = fetchPolyInfo(storageId);
+        String poly = polyInfo.fetch(POLY_NAME_KEY, "");
         return mongodbStorage.getPolyRecordStorage().fetchPoly(poly, ids);
     }
 }
