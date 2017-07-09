@@ -1,16 +1,18 @@
 package com.unidev.polydata.api;
 
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import com.google.common.collect.ImmutableSet;
 import com.unidev.polydata.APICore;
 import com.unidev.polydata.APIPolyQuery;
-import com.unidev.polydata.PolyInfo;
 import com.unidev.polydata.PolyRecord;
-import com.unidev.polydata.domain.BasicPoly;
-import java.util.Collection;
+import com.unidev.polydata.model.HateoasResource;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,42 +27,88 @@ public class APIController {
     private APICore apiCore;
 
     @RequestMapping("storage/{storageId}")
-    public PolyInfo storageInfo(@PathVariable("storageId") String storageId) {
-        return apiCore.fetchPolyInfo(storageId);
+    public HateoasResource storageInfo(@PathVariable("storageId") String storageId) {
+        HateoasResource polyResource = HateoasResource.builder()
+            .payload(apiCore.fetchPolyInfo(storageId)).build();
+
+        HateoasResource resource = methodOn(APIController.class).storageInfo(storageId);
+        Link link = linkTo(resource).withSelfRel();
+        polyResource.add(link);
+        return polyResource;
     }
 
     @RequestMapping("storage/{storageId}/tags")
-    public Collection<BasicPoly> storageTags(@PathVariable("storageId") String storageId) {
-        return apiCore.fetchTags(storageId);
+    public HateoasResource storageTags(@PathVariable("storageId") String storageId) {
+        HateoasResource collectionResource = HateoasResource.builder()
+            .payload(apiCore.fetchTags(storageId))
+            .build();
+
+        HateoasResource resource = methodOn(APIController.class)
+            .storageTags(storageId);
+        Link link = linkTo(resource).withSelfRel();
+        collectionResource.add(link);
+
+        return collectionResource;
     }
 
     @PostMapping(value = "storage/{storageId}/query")
-    public Collection<PolyRecord> queryStorage(@PathVariable("storageId") String storageId,
+    public HateoasResource queryStorage(@PathVariable("storageId") String storageId,
         @RequestBody APIPolyQuery query) {
-        return apiCore.fetchRecords(storageId, null, query);
+        HateoasResource collectionResource = HateoasResource.builder()
+            .payload(apiCore.fetchRecords(storageId, null, query)).build();
+
+        HateoasResource resource = methodOn(APIController.class)
+            .queryStorage(storageId, query);
+        Link link = linkTo(resource).withSelfRel();
+        collectionResource.add(link);
+
+        return collectionResource;
     }
 
     @PostMapping(value = "storage/{storageId}/tag/{tag}")
-    public Collection<PolyRecord> storageTagsRecords(@PathVariable("storageId") String storageId,
+    public HateoasResource storageTagsRecords(@PathVariable("storageId") String storageId,
         @PathVariable("tag") String tag, @RequestBody APIPolyQuery query) {
-        return apiCore.fetchRecords(storageId, tag, query);
+        HateoasResource collectionResource = HateoasResource.builder()
+            .payload(apiCore.fetchRecords(storageId, tag, query)).build();
+
+        HateoasResource resource = methodOn(APIController.class)
+            .storageTagsRecords(storageId, tag, query);
+        Link link = linkTo(resource).withSelfRel();
+        collectionResource.add(link);
+
+        return collectionResource;
     }
 
     @RequestMapping(value = "storage/{storageId}/poly/{polyId}")
-    public PolyRecord poly(@PathVariable("storageId") String storageId,
+    public HateoasResource poly(@PathVariable("storageId") String storageId,
         @PathVariable("polyId") String polyId) {
         Map<String, PolyRecord> recordMap = apiCore
             .fetchPoly(storageId, ImmutableSet.of(polyId));
         if (recordMap.isEmpty()) {
             throw new NotFoundException("Poly not found");
         }
-        return recordMap.values().iterator().next();
+        HateoasResource poly = HateoasResource.builder()
+            .payload(recordMap.values().iterator().next()).build();
+        HateoasResource resource = methodOn(APIController.class)
+            .poly(storageId, polyId);
+        Link link = linkTo(resource).withSelfRel();
+        poly.add(link);
+
+        return poly;
     }
 
     @PostMapping(value = "storage/{storageId}/poly")
-    public Map<String, PolyRecord> poly(@PathVariable("storageId") String storageId,
+    public HateoasResource poly(@PathVariable("storageId") String storageId,
         @RequestBody List<String> polyIds) {
-        return apiCore.fetchPoly(storageId, polyIds);
+        HateoasResource<Object> polyMap = HateoasResource.builder()
+            .payload(apiCore.fetchPoly(storageId, polyIds)).build();
+
+        HateoasResource resource = methodOn(APIController.class)
+            .poly(storageId, polyIds);
+        Link link = linkTo(resource).withSelfRel();
+        polyMap.add(link);
+
+        return polyMap;
     }
 
 }
