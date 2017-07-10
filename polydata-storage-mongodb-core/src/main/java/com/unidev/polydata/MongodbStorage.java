@@ -61,15 +61,17 @@ public class MongodbStorage {
         } else {
             polyRecordStorage.save(poly, polyRecord);
         }
-        getTagStorage().addTag(poly, polyRecord.fetchTags());
-
-        TagIndexStorage tagIndexStorage = getTagIndexStorage();
-        polyRecord.fetchTags().forEach(tag -> {
-            BasicPoly tagIndexRecord = BasicPoly.newPoly();
-            tagIndexRecord._id(polyRecord._id());
-            tagIndexRecord.put(TAG_KEY, tag);
-            tagIndexStorage.addPolyIndex(poly, tag._id(), tagIndexRecord);
-        });
+        Collection<BasicPoly> tags = polyRecord.fetchTags();
+        if (tags != null) {
+            getTagStorage().addTag(poly, tags);
+            TagIndexStorage tagIndexStorage = getTagIndexStorage();
+            polyRecord.fetchTags().forEach(tag -> {
+                BasicPoly tagIndexRecord = BasicPoly.newPoly();
+                tagIndexRecord._id(polyRecord._id());
+                tagIndexRecord.put(TAG_KEY, tag);
+                tagIndexStorage.addPolyIndex(poly, tag._id(), tagIndexRecord);
+            });
+        }
     }
 
     /**
