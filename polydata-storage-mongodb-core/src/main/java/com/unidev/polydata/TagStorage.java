@@ -152,7 +152,7 @@ public class TagStorage extends AbstractPolyStorage {
 
     @Deprecated
     public void removeTag(String poly, Collection<BasicPoly> tags) {
-        tags.stream().map(tag -> tag._id()).forEach(id -> removeTag(poly, null, id));
+        removeTag(poly, null, tags);
     }
 
     public void removeTag(String poly, String storage, Collection<BasicPoly> tags) {
