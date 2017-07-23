@@ -26,7 +26,7 @@
 
   <cache maxEntriesLocalHeap="1000"
     name="fetchRecords"
-    timeToLiveSeconds="1200">
+    timeToLiveSeconds="60">
     <persistence strategy="localTempSwap"/>
   </cache>
 
