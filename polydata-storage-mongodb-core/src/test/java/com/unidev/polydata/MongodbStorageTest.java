@@ -125,6 +125,36 @@ public class MongodbStorageTest {
     }
 
     @Test
+    public void testCustomTagStorage() {
+        String poly = "tomato_" + new Random().nextInt(256);
+        String tags_storage = "categories";
+
+        mongodbStorage.migrate(poly);
+
+        TagStorage tagStorage = mongodbStorage.getTagStorage();
+        tagStorage.migrate(poly, tags_storage);
+
+        List<BasicPoly> emptyTagList = tagStorage.listTags(poly, tags_storage);
+        assertThat(emptyTagList.size(), is(0));
+
+        BasicPoly tag1 = BasicPoly.newPoly("tag1");
+        BasicPoly tag1_1 = BasicPoly.newPoly("tag1");
+        BasicPoly tag2 = BasicPoly.newPoly("tag2");
+
+        tagStorage.addTag(poly, tags_storage, tag1);
+        tagStorage.addTag(poly, tags_storage, tag1_1);
+        tagStorage.addTag(poly, tags_storage, tag2);
+
+        List<BasicPoly> tags = tagStorage.listTags(poly, tags_storage);
+        assertThat(tags.size(), is(2));
+
+        Optional<BasicPoly> optionalDbTag1 = tagStorage.fetchPoly(poly, tags_storage, "tag1");
+        assertThat(optionalDbTag1.isPresent(), is(true));
+        BasicPoly dbTag1 = optionalDbTag1.get();
+        assertThat(dbTag1.fetch(COUNT_KEY), is(2));
+    }
+
+    @Test
     public void testTagIndexOperations() {
         String poly = "tomato_" + new Random().nextInt(256);
         mongodbStorage.migrate(poly);

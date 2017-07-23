@@ -29,7 +29,7 @@ public class TagStorage extends AbstractPolyStorage {
 
     protected void migrate(String poly, String storage) {
         String suffix = "";
-        if (StringUtils.isNotBlank(suffix)) {
+        if (StringUtils.isNotBlank(storage)) {
             suffix = "." + storage;
         }
         MongoChangesResultStorage mongoChangesResultStorage = new MongoChangesResultStorage(
@@ -59,7 +59,7 @@ public class TagStorage extends AbstractPolyStorage {
 
     public String fetchCollectionName(String poly, String storage) {
         String suffix = "";
-        if (StringUtils.isNotBlank(suffix)) {
+        if (StringUtils.isNotBlank(storage)) {
             suffix = "." + storage;
         }
         return poly + "." + TAGS_COLLECTION + suffix;
@@ -105,13 +105,13 @@ public class TagStorage extends AbstractPolyStorage {
     public BasicPoly addTag(String poly, String storage, BasicPoly tag) {
         if (!exist(poly, storage, tag._id())) {
             tag.put(COUNT_KEY, 1);
-            return save(poly, tag);
+            return save(poly, storage, tag);
         }
         BasicPoly storedTag = fetchPoly(poly, storage, tag._id()).get();
         int count = storedTag.fetch(COUNT_KEY, 1);
         storedTag.putAll(tag);
         storedTag.put(COUNT_KEY, count + 1);
-        return update(poly, storedTag);
+        return update(poly, storage, storedTag);
     }
 
     @Deprecated
@@ -164,13 +164,23 @@ public class TagStorage extends AbstractPolyStorage {
         return exist(collection, id);
     }
 
+    @Deprecated
     protected BasicPoly save(String poly, BasicPoly basicPoly) {
-        MongoCollection<Document> collection = fetchCollection(poly);
+        return save(poly, null, basicPoly);
+    }
+
+    protected BasicPoly save(String poly, String storage, BasicPoly basicPoly) {
+        MongoCollection<Document> collection = fetchCollection(poly, storage);
         return save(collection, basicPoly);
     }
 
+    @Deprecated
     protected BasicPoly update(String poly, BasicPoly basicPoly) {
-        MongoCollection<Document> collection = fetchCollection(poly);
+        return update(poly, null, basicPoly);
+    }
+
+    protected BasicPoly update(String poly, String storage, BasicPoly basicPoly) {
+        MongoCollection<Document> collection = fetchCollection(poly, storage);
         return update(collection, basicPoly);
     }
 
