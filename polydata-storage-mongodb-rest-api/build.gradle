@@ -18,7 +18,13 @@ springBoot {
     executable = true
 }
 
+repositories {
+    maven { url 'http://maven.restlet.org' }
+}
+
 dependencies {
+    compile 'org.jminix:jminix:1.2.0'
+
     compile("com.unidev.platform:unidev-strings:$project.unidevPlatformVersion")
     compile("com.unidev.platform:unidev-j2ee:$project.unidevPlatformVersion")
     compile("com.unidev.platform:unidev-exception:$project.unidevPlatformVersion")
