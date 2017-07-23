@@ -7,6 +7,8 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.4.17"
+
     }
 }
 
@@ -21,6 +23,8 @@ springBoot {
 repositories {
     maven { url 'http://maven.restlet.org' }
 }
+apply plugin: "com.gorylenko.gradle-git-properties"
+
 
 dependencies {
     compile 'org.jminix:jminix:1.2.0'
