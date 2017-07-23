@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  dynamicConfig="true"
+  monitoring="autodetect"
+  updateCheck="false"
+  xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd">
+  <diskStore path="java.io.tmpdir"/>
+
+  <cache maxEntriesLocalHeap="500"
+    name="fetchPolyInfo"
+    timeToLiveSeconds="1200">
+    <persistence strategy="localTempSwap"/>
+  </cache>
+
+  <cache maxEntriesLocalHeap="500"
+    name="fetchTags"
+    timeToLiveSeconds="1200">
+    <persistence strategy="localTempSwap"/>
+  </cache>
+
+  <cache maxEntriesLocalHeap="1000"
+    name="fetchPoly"
+    timeToLiveSeconds="1200">
+    <persistence strategy="localTempSwap"/>
+  </cache>
+
+  <cache maxEntriesLocalHeap="1000"
+    name="fetchRecords"
+    timeToLiveSeconds="1200">
+    <persistence strategy="localTempSwap"/>
+  </cache>
+
+</ehcache>

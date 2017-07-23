@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class APIPolyQuery {
 
     private int page = 0;
+    private String startKey;
 
 }
 
