@@ -58,7 +58,6 @@ public class APICore {
         return mongodbStorage.fetchRecords(poly, polyQuery);
     }
 
-    @Cacheable(value = "fetchPoly", key = "#storageId + '-' + #ids")
     public Map<String, PolyRecord> fetchPoly(String storageId, Collection<String> ids) {
         PolyInfo polyInfo = fetchPolyInfo(storageId);
         String poly = polyInfo.fetchPolyCollection();
