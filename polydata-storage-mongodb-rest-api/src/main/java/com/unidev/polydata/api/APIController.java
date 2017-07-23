@@ -68,6 +68,21 @@ public class APIController {
         return collectionResource;
     }
 
+    @RequestMapping("storage/{storageId}/tags/{tagStorage}")
+    public HateoasResource storageTags(@PathVariable("storageId") String storageId,
+        @PathVariable("tagStorage") String tagStorage) {
+        HateoasResource collectionResource = HateoasResource.builder()
+            .payload(apiCore.fetchTags(storageId, tagStorage))
+            .build();
+
+        HateoasResource resource = methodOn(APIController.class)
+            .storageTags(storageId, tagStorage);
+        Link link = linkTo(resource).withSelfRel();
+        collectionResource.add(link);
+
+        return collectionResource;
+    }
+
     @PostMapping(value = "storage/{storageId}/query")
     public HateoasResource queryStorage(@PathVariable("storageId") String storageId,
         @RequestBody APIPolyQuery query) {

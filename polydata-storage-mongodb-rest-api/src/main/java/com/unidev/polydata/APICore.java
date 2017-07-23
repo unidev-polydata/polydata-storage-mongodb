@@ -32,6 +32,13 @@ public class APICore {
         return mongodbStorage.getTagStorage().listTags(poly);
     }
 
+
+    public Object fetchTags(String storageId, String tagStorage) {
+        PolyInfo polyInfo = fetchPolyInfo(storageId);
+        String poly = polyInfo.fetchPolyCollection();
+        return mongodbStorage.getTagStorage().listTags(poly, tagStorage);
+    }
+
     public Collection<PolyRecord> fetchRecords(String storageId, String tag,
         APIPolyQuery apiPolyQuery) {
 
@@ -53,4 +60,5 @@ public class APICore {
         String poly = polyInfo.fetchPolyCollection();
         return mongodbStorage.getPolyRecordStorage().fetchPoly(poly, ids);
     }
+
 }
