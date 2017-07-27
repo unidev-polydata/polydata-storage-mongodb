@@ -23,66 +23,69 @@ import org.bson.Document;
  */
 public class PolyRecordStorage extends AbstractPolyStorage {
 
-  public PolyRecordStorage(MongoClient mongoClient, String mongoDatabase) {
-    super(mongoClient, mongoDatabase);
-  }
-
-  public MongoCollection<Document> fetchCollection(String poly) {
-    return mongoClient.getDatabase(mongoDatabase).getCollection(poly);
-  }
-
-  public BasicPoly save(String poly, BasicPoly basicPoly) {
-    MongoCollection<Document> collection = fetchCollection(poly);
-    return save(collection, basicPoly);
-  }
-
-  public Optional<PolyRecord> fetchPoly(String poly, String id) {
-    MongoCollection<Document> collection = fetchCollection(poly);
-    Optional<Document> document = fetchRawDocument(collection, id);
-    if (document.isPresent()) {
-      return Optional.of(new PolyRecord(document.get()));
+    public PolyRecordStorage(MongoClient mongoClient, String mongoDatabase) {
+        super(mongoClient, mongoDatabase);
     }
-    return Optional.empty();
-  }
 
-  public Map<String, PolyRecord> fetchPoly(String poly, Collection<String> id) {
-    return fetchPoly(poly, id, PolyRecord::new);
-  }
-
-  public Map<String, PolyRecord> fetchPoly(String poly, Collection<String> id,
-      Function<Document, PolyRecord> mappingFunction) {
-    Map<String, PolyRecord> result = new HashMap<>();
-    MongoCollection<Document> collection = fetchCollection(poly);
-    FindIterable<Document> documents = collection.find(in("_id", id));
-    for (Document document : documents) {
-      PolyRecord polyRecord = mappingFunction.apply(document);
-      result.put(polyRecord._id(), polyRecord);
+    public MongoCollection<Document> fetchCollection(String poly) {
+        return mongoClient.getDatabase(mongoDatabase).getCollection(poly);
     }
-    return result;
-  }
 
-  public boolean existPoly(String poly, String id) {
-    MongoCollection<Document> collection = fetchCollection(poly);
-    return exist(collection, id);
-  }
+    public BasicPoly save(String poly, BasicPoly basicPoly) {
+        MongoCollection<Document> collection = fetchCollection(poly);
+        return save(collection, basicPoly);
+    }
 
-  public boolean removePoly(String poly, String id) {
-    MongoCollection<Document> collection = fetchCollection(poly);
-    return removePoly(collection, id);
-  }
+    public Optional<PolyRecord> fetchPoly(String poly, String id) {
+        return fetchPoly(poly, id, PolyRecord::new);
+    }
 
-  protected void migrate(String poly) {
-    MongoChangesResultStorage mongoChangesResultStorage = new MongoChangesResultStorage(mongoClient,
-        mongoDatabase, poly + ".changes");
-    ChangesCore changesCore = new ChangesCore(mongoChangesResultStorage);
-    changesCore.addChange(new DateIndex());
+    public Optional<PolyRecord> fetchPoly(String poly, String id,
+        Function<Document, PolyRecord> mappingFunction) {
+        MongoCollection<Document> collection = fetchCollection(poly);
+        Optional<Document> document = fetchRawDocument(collection, id);
+        return document.map(mappingFunction::apply);
+    }
 
-    ChangeContext changeContext = new ChangeContext();
-    changeContext.put(MongodbChange.MONGO_CLIENT_KEY, mongoClient);
-    changeContext.put(MongodbChange.DATABASE_KEY, mongoDatabase);
-    changeContext.put(MongodbChange.COLLECTION_KEY, fetchCollection(poly));
+    public Map<String, PolyRecord> fetchPoly(String poly, Collection<String> id) {
+        return fetchPoly(poly, id, PolyRecord::new);
+    }
 
-    changesCore.executeChanges(changeContext);
-  }
+    public Map<String, PolyRecord> fetchPoly(String poly, Collection<String> id,
+        Function<Document, PolyRecord> mappingFunction) {
+        Map<String, PolyRecord> result = new HashMap<>();
+        MongoCollection<Document> collection = fetchCollection(poly);
+        FindIterable<Document> documents = collection.find(in("_id", id));
+        for (Document document : documents) {
+            PolyRecord polyRecord = mappingFunction.apply(document);
+            result.put(polyRecord._id(), polyRecord);
+        }
+        return result;
+    }
+
+    public boolean existPoly(String poly, String id) {
+        MongoCollection<Document> collection = fetchCollection(poly);
+        return exist(collection, id);
+    }
+
+    public boolean removePoly(String poly, String id) {
+        MongoCollection<Document> collection = fetchCollection(poly);
+        return removePoly(collection, id);
+    }
+
+    protected void migrate(String poly) {
+        MongoChangesResultStorage mongoChangesResultStorage = new MongoChangesResultStorage(
+            mongoClient,
+            mongoDatabase, poly + ".changes");
+        ChangesCore changesCore = new ChangesCore(mongoChangesResultStorage);
+        changesCore.addChange(new DateIndex());
+
+        ChangeContext changeContext = new ChangeContext();
+        changeContext.put(MongodbChange.MONGO_CLIENT_KEY, mongoClient);
+        changeContext.put(MongodbChange.DATABASE_KEY, mongoDatabase);
+        changeContext.put(MongodbChange.COLLECTION_KEY, fetchCollection(poly));
+
+        changesCore.executeChanges(changeContext);
+    }
 
 }
