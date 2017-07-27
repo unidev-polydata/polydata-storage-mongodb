@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import org.bson.Document;
 
 
@@ -94,6 +95,11 @@ public class MongodbStorage {
     }
 
     public Collection<PolyRecord> fetchRecords(String poly, PolyQuery polyQuery) {
+        return fetchRecords(poly, polyQuery, PolyRecord::new);
+    }
+
+    public Collection<PolyRecord> fetchRecords(String poly, PolyQuery polyQuery,
+        Function<Document, PolyRecord> mappingFunction) {
         if (polyQuery.getTag() == null) {
             MongoCollection<Document> collection = getPolyRecordStorage().fetchCollection(poly);
             FindIterable<Document> result = collection.find()
@@ -101,7 +107,8 @@ public class MongodbStorage {
                     polyQuery.getPage() * polyQuery.getItemPerPage())
                 .limit(polyQuery.getItemPerPage());
             List<PolyRecord> list = new ArrayList<>();
-            result.iterator().forEachRemaining(document -> list.add(new PolyRecord(document)));
+            result.iterator()
+                .forEachRemaining(document -> list.add(mappingFunction.apply(document)));
             return list;
         } else {
             MongoCollection<Document> collection = getTagIndexStorage()
@@ -112,7 +119,7 @@ public class MongodbStorage {
                 .limit(polyQuery.getItemPerPage());
             List<String> ids = new ArrayList<>();
             result.iterator().forEachRemaining(document -> ids.add(document.get("_id") + ""));
-            return getPolyRecordStorage().fetchPoly(poly, ids).values();
+            return getPolyRecordStorage().fetchPoly(poly, ids, mappingFunction).values();
         }
     }
 

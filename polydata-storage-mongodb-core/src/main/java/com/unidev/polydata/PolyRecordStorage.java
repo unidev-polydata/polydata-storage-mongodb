@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import org.bson.Document;
 
 /**
@@ -45,11 +46,16 @@ public class PolyRecordStorage extends AbstractPolyStorage {
   }
 
   public Map<String, PolyRecord> fetchPoly(String poly, Collection<String> id) {
+    return fetchPoly(poly, id, PolyRecord::new);
+  }
+
+  public Map<String, PolyRecord> fetchPoly(String poly, Collection<String> id,
+      Function<Document, PolyRecord> mappingFunction) {
     Map<String, PolyRecord> result = new HashMap<>();
     MongoCollection<Document> collection = fetchCollection(poly);
     FindIterable<Document> documents = collection.find(in("_id", id));
     for (Document document : documents) {
-      PolyRecord polyRecord = new PolyRecord(document);
+      PolyRecord polyRecord = mappingFunction.apply(document);
       result.put(polyRecord._id(), polyRecord);
     }
     return result;
