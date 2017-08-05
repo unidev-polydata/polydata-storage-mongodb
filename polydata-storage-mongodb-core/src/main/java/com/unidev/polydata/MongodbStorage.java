@@ -1,6 +1,8 @@
 package com.unidev.polydata;
 
 
+import static com.mongodb.client.model.Filters.in;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
@@ -30,7 +32,6 @@ public class MongodbStorage {
     private final PolyInfoStorage polyInfoStorage;
     private final PolyRecordStorage polyRecordStorage;
     private final TagStorage tagStorage;
-    private final TagIndexStorage tagIndexStorage;
     private MongoClient mongoClient;
     private String database;
 
@@ -41,14 +42,12 @@ public class MongodbStorage {
         this.polyInfoStorage = new PolyInfoStorage(mongoClient, database);
         this.polyRecordStorage = new PolyRecordStorage(mongoClient, database);
         this.tagStorage = new TagStorage(mongoClient, database);
-        this.tagIndexStorage = new TagIndexStorage(mongoClient, database);
     }
 
     public void migrate(String poly) {
         polyInfoStorage.migrate(poly);
         polyRecordStorage.migrate(poly);
         tagStorage.migrate(poly);
-        tagIndexStorage.migrate(poly);
     }
 
     /**
@@ -65,13 +64,6 @@ public class MongodbStorage {
         Collection<BasicPoly> tags = polyRecord.fetchTags();
         if (tags != null) {
             getTagStorage().addTag(poly, tags);
-            TagIndexStorage tagIndexStorage = getTagIndexStorage();
-            polyRecord.fetchTags().forEach(tag -> {
-                BasicPoly tagIndexRecord = BasicPoly.newPoly();
-                tagIndexRecord._id(polyRecord._id());
-                tagIndexRecord.put(TAG_KEY, tag);
-                tagIndexStorage.addPolyIndex(poly, tag._id(), tagIndexRecord);
-            });
         }
     }
 
@@ -87,11 +79,6 @@ public class MongodbStorage {
         PolyRecordStorage polyRecordStorage = getPolyRecordStorage();
         polyRecordStorage.removePoly(poly, polyId);
         getTagStorage().removeTag(poly, dbPolyRecord.fetchTags());
-
-        TagIndexStorage tagIndexStorage = getTagIndexStorage();
-        dbPolyRecord.fetchTags().forEach(tag -> {
-            tagIndexStorage.removePolyIndex(poly, tag._id(), dbPolyRecord._id());
-        });
     }
 
     public Collection<PolyRecord> fetchRecords(String poly, PolyQuery polyQuery) {
@@ -100,38 +87,38 @@ public class MongodbStorage {
 
     public Collection<PolyRecord> fetchRecords(String poly, PolyQuery polyQuery,
         Function<Document, PolyRecord> mappingFunction) {
+        FindIterable<Document> result;
+        MongoCollection<Document> collection = getPolyRecordStorage().fetchCollection(poly);
         if (polyQuery.getTag() == null) {
-            MongoCollection<Document> collection = getPolyRecordStorage().fetchCollection(poly);
-            FindIterable<Document> result = collection.find()
+            result = collection.find()
                 .sort(new BasicDBObject().append(MongodbStorage.DATE_KEY, -1)).skip(
                     polyQuery.getPage() * polyQuery.getItemPerPage())
                 .limit(polyQuery.getItemPerPage());
-            List<PolyRecord> list = new ArrayList<>();
-            result.iterator()
-                .forEachRemaining(document -> list.add(mappingFunction.apply(document)));
-            return list;
+
         } else {
-            MongoCollection<Document> collection = getTagIndexStorage()
-                .fetchCollection(poly, polyQuery.getTag());
-            FindIterable<Document> result = collection.find()
+            result = collection.find(in(TAGS_KEY + "._id", polyQuery.getTag()))
                 .sort(new BasicDBObject().append(MongodbStorage.DATE_KEY, -1)).skip(
                     polyQuery.getPage() * polyQuery.getItemPerPage())
                 .limit(polyQuery.getItemPerPage());
-            List<String> ids = new ArrayList<>();
-            result.iterator().forEachRemaining(document -> ids.add(document.get("_id") + ""));
-            return getPolyRecordStorage().fetchPoly(poly, ids, mappingFunction).values();
         }
+        return processIterator(result, mappingFunction);
+    }
+
+    public Collection<PolyRecord> processIterator(FindIterable<Document> result,
+        Function<Document, PolyRecord> mappingFunction) {
+        List<PolyRecord> list = new ArrayList<>();
+        result.iterator()
+            .forEachRemaining(document -> list.add(mappingFunction.apply(document)));
+        return list;
     }
 
     public long countRecords(String poly, PolyQuery polyQuery) {
+        MongoCollection<Document> collection = getPolyRecordStorage().fetchCollection(poly);
         if (polyQuery.getTag() == null) {
-            MongoCollection<Document> collection = getPolyRecordStorage().fetchCollection(poly);
-            return collection.count();
-        } else {
-            MongoCollection<Document> collection = getTagIndexStorage()
-                .fetchCollection(poly, polyQuery.getTag());
             return collection.count();
         }
+
+        return collection.count(in(TAGS_KEY + "._id", polyQuery.getTag()));
     }
 
 
@@ -153,9 +140,5 @@ public class MongodbStorage {
 
     public TagStorage getTagStorage() {
         return tagStorage;
-    }
-
-    public TagIndexStorage getTagIndexStorage() {
-        return tagIndexStorage;
     }
 }
