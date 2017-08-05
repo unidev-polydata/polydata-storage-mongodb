@@ -10,6 +10,7 @@ import com.unidev.changesexecutor.model.ChangeContext;
 import com.unidev.polydata.changes.MongoChangesResultStorage;
 import com.unidev.polydata.changes.MongodbChange;
 import com.unidev.polydata.changes.generic.DateIndex;
+import com.unidev.polydata.changes.generic.TagsIndex;
 import com.unidev.polydata.domain.BasicPoly;
 import java.util.Collection;
 import java.util.HashMap;
@@ -79,6 +80,7 @@ public class PolyRecordStorage extends AbstractPolyStorage {
             mongoDatabase, poly + ".changes");
         ChangesCore changesCore = new ChangesCore(mongoChangesResultStorage);
         changesCore.addChange(new DateIndex());
+        changesCore.addChange(new TagsIndex());
 
         ChangeContext changeContext = new ChangeContext();
         changeContext.put(MongodbChange.MONGO_CLIENT_KEY, mongoClient);
