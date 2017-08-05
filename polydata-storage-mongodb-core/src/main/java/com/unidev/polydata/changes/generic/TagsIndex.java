@@ -22,7 +22,7 @@ public class TagsIndex extends MongodbChange {
         MongoCollection<Document> collection = (MongoCollection<Document>) changeContext
             .get(TagsIndex.COLLECTION_KEY);
         Document index = new Document();
-        index.put(TAGS_KEY, 1);
+        index.put(TAGS_KEY + "._id", 1);
         collection.createIndex(index);
     }
 }
