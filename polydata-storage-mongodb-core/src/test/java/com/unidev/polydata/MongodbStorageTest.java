@@ -206,6 +206,22 @@ public class MongodbStorageTest {
         Collection<PolyRecord> polyRecords = mongodbStorage.fetchRecords(poly, polyQuery);
         assertThat(polyRecords.size(), is(1));
 
+        PolyQuery polyQueryTag3 = new PolyQuery();
+        polyQueryTag3.setTag("tag3");
+        Collection<PolyRecord> polyRecordsTag3 = mongodbStorage.fetchRecords(poly, polyQueryTag3);
+        assertThat(polyRecordsTag3.size(), is(3));
+        for (PolyRecord record : polyRecordsTag3) {
+            Collection<BasicPoly> tags = record.fetchTags();
+            boolean hasTag3 = false;
+            for (BasicPoly tag : tags) {
+                if (tag._id().equals("tag3")) {
+                    hasTag3 = true;
+                    break;
+                }
+            }
+            assertThat(hasTag3, is(true));
+        }
+
         long countRecords = mongodbStorage.countRecords(poly, polyQuery);
         assertThat(countRecords, is(1L));
 
