@@ -155,29 +155,6 @@ public class MongodbStorageTest {
     }
 
     @Test
-    public void testTagIndexOperations() {
-        String poly = "tomato_" + new Random().nextInt(256);
-        mongodbStorage.migrate(poly);
-
-        String tagIndex = "test_tag";
-        String id = "_id";
-        TagIndexStorage tagIndexStorage = mongodbStorage.getTagIndexStorage();
-        assertThat(tagIndexStorage.exist(poly, tagIndex, id), is(false));
-
-        BasicPoly savedPolyIndex = BasicPoly.newPoly(id);
-        savedPolyIndex.put("key", "value");
-        tagIndexStorage.addPolyIndex(poly, tagIndex, savedPolyIndex);
-
-        Optional<BasicPoly> polyById = tagIndexStorage.fetchPoly(poly, tagIndex, id);
-        assertThat(polyById.isPresent(), is(true));
-
-        BasicPoly basicPoly = polyById.get();
-        assertThat(basicPoly._id(), is(id));
-        assertThat(basicPoly.get("key"), is("value"));
-
-    }
-
-    @Test
     public void testPolyRecordPersisting() {
         String poly = "polys_" + new Random().nextInt(256);
         mongodbStorage.migrate(poly);
@@ -241,10 +218,6 @@ public class MongodbStorageTest {
 
         long countAfterRemove = mongodbStorage.getTagStorage().fetchCollection(poly).count();
         assertThat(countAfterRemove, is(0L));
-
-        long tagIndexCount = mongodbStorage.getTagIndexStorage().fetchCollection(poly, "tag1")
-            .count();
-        assertThat(tagIndexCount, is(0L));
 
         polyRecords = mongodbStorage.fetchRecords(poly, polyQuery);
         assertThat(polyRecords.size(), is(0));
