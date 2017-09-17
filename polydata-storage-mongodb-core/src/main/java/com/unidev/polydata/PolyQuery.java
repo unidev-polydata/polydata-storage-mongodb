@@ -6,6 +6,7 @@ public class PolyQuery {
     protected String tag;
     protected int page = 0;
     protected int itemPerPage = 0;
+    private Boolean randomOrder = false;
 
     public String getTag() {
         return tag;
@@ -29,5 +30,13 @@ public class PolyQuery {
 
     public void setItemPerPage(int itemPerPage) {
         this.itemPerPage = itemPerPage;
+    }
+
+    public Boolean getRandomOrder() {
+        return randomOrder;
+    }
+
+    public void setRandomOrder(Boolean randomOrder) {
+        this.randomOrder = randomOrder;
     }
 }

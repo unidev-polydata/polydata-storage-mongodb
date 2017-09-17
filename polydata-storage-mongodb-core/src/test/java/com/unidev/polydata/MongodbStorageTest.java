@@ -222,6 +222,12 @@ public class MongodbStorageTest {
             assertThat(hasTag3, is(true));
         }
 
+        PolyQuery randomOrderQuery = new PolyQuery();
+        randomOrderQuery.setRandomOrder(true);
+        randomOrderQuery.setItemPerPage(10);
+        Collection<PolyRecord> randomRecords = mongodbStorage.fetchRecords(poly, randomOrderQuery);
+        assertThat(randomRecords.size(), is(3));
+
         long countRecords = mongodbStorage.countRecords(poly, polyQuery);
         assertThat(countRecords, is(1L));
 
