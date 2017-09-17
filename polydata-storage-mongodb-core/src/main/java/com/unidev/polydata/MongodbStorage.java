@@ -93,7 +93,7 @@ public class MongodbStorage {
         Function<Document, PolyRecord> mappingFunction) {
         Iterable<Document> result;
         MongoCollection<Document> collection = getPolyRecordStorage().fetchCollection(poly);
-        if (polyQuery.getRandomOrder()) {
+        if (polyQuery.getRandomOrder() != null && polyQuery.getRandomOrder() == true) {
             Set<Document> documents = new HashSet<>();
             long totalCount = collection.count();
             Random random = new Random();

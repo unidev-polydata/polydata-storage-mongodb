@@ -51,7 +51,14 @@ public class APICore {
 
         PolyInfo polyInfo = fetchPolyInfo(storageId);
         String poly = polyInfo.fetchPolyCollection();
-        int itemPerPage = polyInfo.fetch(ITEM_PER_PAGE_KEY, DEFAULT_ITEM_PER_PAGE);
+
+        int itemPerPage;
+
+        if (apiPolyQuery.getItemPerPage() != null) {
+            itemPerPage = apiPolyQuery.getItemPerPage();
+        } else {
+            itemPerPage = polyInfo.fetch(ITEM_PER_PAGE_KEY, DEFAULT_ITEM_PER_PAGE);
+        }
 
         int maxItemPerPage = polyInfo.fetch(MAX_ITEM_PER_PAGE_KEY, MAX_ITEM_PER_PAGE);
         if (itemPerPage > maxItemPerPage) {
@@ -61,7 +68,7 @@ public class APICore {
         PolyQuery polyQuery = new PolyQuery();
         polyQuery.setTag(tag);
         polyQuery.setItemPerPage(itemPerPage);
-        polyQuery.setPage(apiPolyQuery.getPage());
+        polyQuery.setPage(apiPolyQuery.getPage() == null ? 0 : apiPolyQuery.getPage());
         polyQuery.setRandomOrder(apiPolyQuery.getRandomOrder());
 
         return mongodbStorage.fetchRecords(poly, polyQuery);

@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class APIPolyQuery {
 
-    private int page = 0;
+    private Integer page = 0;
     private String startKey;
-
+    private Integer itemPerPage;
     private Boolean randomOrder = false;
-    private int skip = 0;
-    private int limit = 0;
+    private Integer skip = 0;
+    private Integer limit = 0;
 
 }
 
