@@ -6,6 +6,7 @@ Service for fetching mongodb records over RESTful + Hateaos API
 
 /api/v1/storage/{storage} - Get storage information
 /api/v1/storage/{storage}/query - Query stored records
+/api/v1/storage/{storage}/query/random - Query stored records with random order
 /api/v1/storage/{storage}/tags - GET tags
 /api/v1/storage/{storage}/tags/{tags-storage} - GET tags from specific tag storage
 /api/v1/storage/{storage}/tag/{tag} - GET tag index
