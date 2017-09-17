@@ -14,43 +14,45 @@ import org.junit.Test;
 
 public class MongoChangesResultStorageTest {
 
-  MongoChangesResultStorage changesResultStorage;
+    MongoChangesResultStorage changesResultStorage;
 
-  @Before
-  public void init() {
-    MongoClient mongoClient = new MongoClient("mongodb-dev");
-    changesResultStorage = new MongoChangesResultStorage(mongoClient, "polydata-storage-test",
-        "test-changes");
-  }
+    @Before
+    public void init() {
+        MongoClient mongoClient = new MongoClient("mongodb-dev");
+        changesResultStorage = new MongoChangesResultStorage(mongoClient, "polydata-storage-test",
+            "test-changes");
+    }
 
-  @Test
-  public void testStorage() {
-    String id = "Change " + System.currentTimeMillis();
-    assertThat(changesResultStorage.existChangeResult(id), is(false));
+    @Test
+    public void testStorage() {
+        String id = "Change " + System.currentTimeMillis();
+        assertThat(changesResultStorage.existChangeResult(id), is(false));
 
-    Collection<ChangeExecutionResult> changeExecutionResults = changesResultStorage.listResults();
-    assertThat(changeExecutionResults, is(notNullValue()));
+        Collection<ChangeExecutionResult> changeExecutionResults = changesResultStorage
+            .listResults();
+        assertThat(changeExecutionResults, is(notNullValue()));
 
-    MongodbChange change = new MongodbChange(666, id) {
-      @Override
-      public void execute(ChangeContext changeContext) {
+        MongodbChange change = new MongodbChange(666, id) {
+            @Override
+            public void execute(ChangeContext changeContext) {
 
-      }
-    };
+            }
+        };
 
-    MongodbChangeExecutionResult changeExecutionResult = new MongodbChangeExecutionResult(change,
-        ChangeExecutionResult.Result.SUCCESS, "Test result");
+        MongodbChangeExecutionResult changeExecutionResult = new MongodbChangeExecutionResult(
+            change,
+            ChangeExecutionResult.Result.SUCCESS, "Test result");
 
-    changesResultStorage.persistResult(changeExecutionResult);
+        changesResultStorage.persistResult(changeExecutionResult);
 
-    assertThat(changesResultStorage.existChangeResult(id), is(true));
+        assertThat(changesResultStorage.existChangeResult(id), is(true));
 
-    ChangeExecutionResult result = changesResultStorage.fetchResult(id);
-    assertThat(result, is(notNullValue()));
+        ChangeExecutionResult result = changesResultStorage.fetchResult(id);
+        assertThat(result, is(notNullValue()));
 
-    Collection<ChangeExecutionResult> updatedResultList = changesResultStorage.listResults();
-    assertThat(updatedResultList, is(notNullValue()));
-    assertThat(updatedResultList.size(), is(changeExecutionResults.size() + 1));
-  }
+        Collection<ChangeExecutionResult> updatedResultList = changesResultStorage.listResults();
+        assertThat(updatedResultList, is(notNullValue()));
+        assertThat(updatedResultList.size(), is(changeExecutionResults.size() + 1));
+    }
 
 }

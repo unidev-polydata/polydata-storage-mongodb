@@ -14,62 +14,62 @@ import org.bson.Document;
  */
 public abstract class AbstractPolyStorage {
 
-  protected MongoClient mongoClient;
-  protected String mongoDatabase;
+    protected MongoClient mongoClient;
+    protected String mongoDatabase;
 
-  public AbstractPolyStorage(MongoClient mongoClient, String mongoDatabase) {
-    this.mongoClient = mongoClient;
-    this.mongoDatabase = mongoDatabase;
-  }
-
-  protected abstract void migrate(String poly);
-
-  protected boolean exist(MongoCollection<Document> collection, String id) {
-    long count = collection.count(eq("_id", id));
-    return count != 0;
-  }
-
-  protected BasicPoly save(MongoCollection<Document> collection, BasicPoly basicPoly) {
-    Document document = new Document(basicPoly);
-    collection.insertOne(document);
-    return basicPoly;
-  }
-
-  protected BasicPoly update(MongoCollection<Document> collection, BasicPoly basicPoly) {
-    Document document = new Document(basicPoly);
-    collection.updateOne(eq("_id", basicPoly._id()), new Document("$set", document));
-    return basicPoly;
-  }
-
-  protected BasicPoly saveOrUpdate(MongoCollection<Document> collection, BasicPoly basicPoly) {
-    if (exist(collection, basicPoly._id())) {
-      return update(collection, basicPoly);
+    public AbstractPolyStorage(MongoClient mongoClient, String mongoDatabase) {
+        this.mongoClient = mongoClient;
+        this.mongoDatabase = mongoDatabase;
     }
-    return save(collection, basicPoly);
-  }
 
+    protected abstract void migrate(String poly);
 
-  protected Optional<BasicPoly> fetchPoly(MongoCollection<Document> collection, String id) {
-    Document document = collection.find(eq("_id", id)).first();
-    if (document == null) {
-      return Optional.empty();
+    protected boolean exist(MongoCollection<Document> collection, String id) {
+        long count = collection.count(eq("_id", id));
+        return count != 0;
     }
-    BasicPoly basicPoly = new BasicPoly();
-    basicPoly.putAll(document);
-    return Optional.of(basicPoly);
-  }
 
-  protected Optional<Document> fetchRawDocument(MongoCollection<Document> collection, String id) {
-    Document document = collection.find(eq("_id", id)).first();
-    return Optional.ofNullable(document);
-  }
-
-  protected boolean removePoly(MongoCollection<Document> collection, String id) {
-    if (!exist(collection, id)) {
-      return false;
+    protected BasicPoly save(MongoCollection<Document> collection, BasicPoly basicPoly) {
+        Document document = new Document(basicPoly);
+        collection.insertOne(document);
+        return basicPoly;
     }
-    DeleteResult deleteResult = collection.deleteOne(eq("_id", id));
-    return deleteResult.getDeletedCount() == 1L;
-  }
+
+    protected BasicPoly update(MongoCollection<Document> collection, BasicPoly basicPoly) {
+        Document document = new Document(basicPoly);
+        collection.updateOne(eq("_id", basicPoly._id()), new Document("$set", document));
+        return basicPoly;
+    }
+
+    protected BasicPoly saveOrUpdate(MongoCollection<Document> collection, BasicPoly basicPoly) {
+        if (exist(collection, basicPoly._id())) {
+            return update(collection, basicPoly);
+        }
+        return save(collection, basicPoly);
+    }
+
+
+    protected Optional<BasicPoly> fetchPoly(MongoCollection<Document> collection, String id) {
+        Document document = collection.find(eq("_id", id)).first();
+        if (document == null) {
+            return Optional.empty();
+        }
+        BasicPoly basicPoly = new BasicPoly();
+        basicPoly.putAll(document);
+        return Optional.of(basicPoly);
+    }
+
+    protected Optional<Document> fetchRawDocument(MongoCollection<Document> collection, String id) {
+        Document document = collection.find(eq("_id", id)).first();
+        return Optional.ofNullable(document);
+    }
+
+    protected boolean removePoly(MongoCollection<Document> collection, String id) {
+        if (!exist(collection, id)) {
+            return false;
+        }
+        DeleteResult deleteResult = collection.deleteOne(eq("_id", id));
+        return deleteResult.getDeletedCount() == 1L;
+    }
 
 }
