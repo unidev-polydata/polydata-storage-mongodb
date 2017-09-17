@@ -15,3 +15,21 @@ Service for fetching mongodb records over RESTful + Hateaos API
 ## System endpoints
 
 /jmx/ - JMX console
+
+## Debug API calls
+
+Storage info
+```
+curl -v http://localhost:8080/api/v1/storage/localhost
+```
+
+Query request
+```
+curl -v -X POST -H "Content-Type: application/json" -d '{}'  http://localhost:8080/api/v1/storage/localhost/query
+```
+
+Random order
+```
+curl -v -X POST -H "Content-Type: application/json" -d '{"randomOrder":"true"}'  http://localhost:8080/api/v1/storage/localhost/query
+```
+
