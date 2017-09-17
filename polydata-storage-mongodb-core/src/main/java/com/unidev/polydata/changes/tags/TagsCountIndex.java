@@ -13,16 +13,16 @@ import org.bson.Document;
  */
 public class TagsCountIndex extends MongodbChange {
 
-  public TagsCountIndex() {
-    super(100L, "tag-count-index");
-  }
+    public TagsCountIndex() {
+        super(100L, "tag-count-index");
+    }
 
-  @Override
-  public void execute(ChangeContext changeContext) {
-    MongoCollection<Document> collection = (MongoCollection<Document>) changeContext
-        .get(TagsCountIndex.COLLECTION_KEY);
-    Document index = new Document();
-    index.put(COUNT_KEY, 1);
-    collection.createIndex(index);
-  }
+    @Override
+    public void execute(ChangeContext changeContext) {
+        MongoCollection<Document> collection = (MongoCollection<Document>) changeContext
+            .get(TagsCountIndex.COLLECTION_KEY);
+        Document index = new Document();
+        index.put(COUNT_KEY, 1);
+        collection.createIndex(index);
+    }
 }

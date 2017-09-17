@@ -7,11 +7,15 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.unidev.polydata.domain.BasicPoly;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 import org.bson.Document;
 
@@ -87,24 +91,47 @@ public class MongodbStorage {
 
     public Collection<PolyRecord> fetchRecords(String poly, PolyQuery polyQuery,
         Function<Document, PolyRecord> mappingFunction) {
-        FindIterable<Document> result;
+        Iterable<Document> result;
         MongoCollection<Document> collection = getPolyRecordStorage().fetchCollection(poly);
-        if (polyQuery.getTag() == null) {
-            result = collection.find()
-                .sort(new BasicDBObject().append(MongodbStorage.DATE_KEY, -1)).skip(
-                    polyQuery.getPage() * polyQuery.getItemPerPage())
-                .limit(polyQuery.getItemPerPage());
-
+        if (polyQuery.getRandomOrder() != null && polyQuery.getRandomOrder() == true) {
+            Set<Document> documents = new HashSet<>();
+            long totalCount = collection.count();
+            Random random = new Random();
+            for (int i = 0; i < polyQuery.getItemPerPage(); i++) {
+                int skip = random.nextInt((int) totalCount);
+                MongoCursor<Document> iterator = fetchIterable(collection, polyQuery).skip(skip)
+                    .limit(1).iterator();
+                if (iterator.hasNext()) {
+                    documents.add(iterator.next());
+                }
+            }
+            result = documents;
         } else {
-            result = collection.find(in(TAGS_KEY + "._id", polyQuery.getTag()))
-                .sort(new BasicDBObject().append(MongodbStorage.DATE_KEY, -1)).skip(
-                    polyQuery.getPage() * polyQuery.getItemPerPage())
-                .limit(polyQuery.getItemPerPage());
+            if (polyQuery.getTag() == null) {
+                result = fetchIterable(collection, polyQuery)
+                    .sort(new BasicDBObject().append(MongodbStorage.DATE_KEY, -1)).skip(
+                        polyQuery.getPage() * polyQuery.getItemPerPage())
+                    .limit(polyQuery.getItemPerPage());
+
+            } else {
+                result = fetchIterable(collection, polyQuery)
+                    .sort(new BasicDBObject().append(MongodbStorage.DATE_KEY, -1)).skip(
+                        polyQuery.getPage() * polyQuery.getItemPerPage())
+                    .limit(polyQuery.getItemPerPage());
+            }
         }
         return processIterator(result, mappingFunction);
     }
 
-    public Collection<PolyRecord> processIterator(FindIterable<Document> result,
+    private FindIterable<Document> fetchIterable(MongoCollection<Document> collection,
+        PolyQuery query) {
+        if (query.getTag() == null) {
+            return collection.find();
+        }
+        return collection.find(in(TAGS_KEY + "._id", query.getTag()));
+    }
+
+    public Collection<PolyRecord> processIterator(Iterable<Document> result,
         Function<Document, PolyRecord> mappingFunction) {
         List<PolyRecord> list = new ArrayList<>();
         result.iterator()

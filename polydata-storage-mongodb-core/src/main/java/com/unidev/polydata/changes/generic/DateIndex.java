@@ -13,16 +13,16 @@ import org.bson.Document;
  */
 public class DateIndex extends MongodbChange {
 
-  public DateIndex() {
-    super(101L, "date-index-index");
-  }
+    public DateIndex() {
+        super(101L, "date-index-index");
+    }
 
-  @Override
-  public void execute(ChangeContext changeContext) {
-    MongoCollection<Document> collection = (MongoCollection<Document>) changeContext
-        .get(DateIndex.COLLECTION_KEY);
-    Document index = new Document();
-    index.put(DATE_KEY, 1);
-    collection.createIndex(index);
-  }
+    @Override
+    public void execute(ChangeContext changeContext) {
+        MongoCollection<Document> collection = (MongoCollection<Document>) changeContext
+            .get(DateIndex.COLLECTION_KEY);
+        Document index = new Document();
+        index.put(DATE_KEY, 1);
+        collection.createIndex(index);
+    }
 }

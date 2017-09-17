@@ -23,35 +23,35 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableCaching
 public class Application implements ServletContextInitializer {
 
-  public static final String API_VERSION = "1";
+    public static final String API_VERSION = "1";
 
-  @Value("${polydata.mongodb}")
-  private String polydataMongodbUri;
+    @Value("${polydata.mongodb}")
+    private String polydataMongodbUri;
 
-  public static void main(String[] args) {
-    SpringApplication.run(Application.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
-  @Bean
-  public WebUtils webUtils() {
-    return new WebUtils();
-  }
+    @Bean
+    public WebUtils webUtils() {
+        return new WebUtils();
+    }
 
-  @Bean
-  public Docket apiDocs() {
-    return new Docket(DocumentationType.SWAGGER_2)
-        .select()
-        .apis(RequestHandlerSelectors.any())
-        .paths(PathSelectors.any())
-        .build();
-  }
+    @Bean
+    public Docket apiDocs() {
+        return new Docket(DocumentationType.SWAGGER_2)
+            .select()
+            .apis(RequestHandlerSelectors.any())
+            .paths(PathSelectors.any())
+            .build();
+    }
 
-  @Bean
-  public MongodbStorage mongodbStorage() {
-    MongoClientURI mongoURI = new MongoClientURI(polydataMongodbUri);
-    MongoClient mongoClient = new MongoClient(mongoURI);
-    return new MongodbStorage(mongoClient, mongoURI.getDatabase());
-  }
+    @Bean
+    public MongodbStorage mongodbStorage() {
+        MongoClientURI mongoURI = new MongoClientURI(polydataMongodbUri);
+        MongoClient mongoClient = new MongoClient(mongoURI);
+        return new MongodbStorage(mongoClient, mongoURI.getDatabase());
+    }
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {

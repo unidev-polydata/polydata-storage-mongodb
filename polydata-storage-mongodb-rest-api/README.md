@@ -12,6 +12,35 @@ Service for fetching mongodb records over RESTful + Hateaos API
 /api/v1/storage/{storage}/poly/{id} - GET tag by id
 /api/v1/storage/{storage}/poly - POST with list of IDs
 
+## Query Endpoint datamodel
+
+```
+    Integer page; - page for query
+    String startKey;
+    Integer itemPerPage; - items per page, limited by poly configurations
+    Boolean randomOrder;
+    Integer skip;
+    Integer limit;
+```
+
 ## System endpoints
 
 /jmx/ - JMX console
+
+## Debug API calls
+
+Storage info
+```
+curl -v http://localhost:8080/api/v1/storage/localhost
+```
+
+Query request
+```
+curl -v -X POST -H "Content-Type: application/json" -d '{}'  http://localhost:8080/api/v1/storage/localhost/query
+```
+
+Random order
+```
+curl -v -X POST -H "Content-Type: application/json" -d '{"randomOrder":"true", "itemPerPage": 1}'  http://localhost:8080/api/v1/storage/localhost/query
+```
+
