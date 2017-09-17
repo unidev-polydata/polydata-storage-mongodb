@@ -13,8 +13,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class APICore {
 
-    public static final int DEFAULT_ITEM_PER_PAGE = 30;
     public static final String ITEM_PER_PAGE_KEY = "item_per_page";
+    public static final int DEFAULT_ITEM_PER_PAGE = 30;
+
+    public static final int MAX_ITEM_PER_PAGE = 100;
+    public static final String MAX_ITEM_PER_PAGE_KEY = "max_item_per_page";
 
     @Autowired
     private MongodbStorage mongodbStorage;
@@ -50,10 +53,16 @@ public class APICore {
         String poly = polyInfo.fetchPolyCollection();
         int itemPerPage = polyInfo.fetch(ITEM_PER_PAGE_KEY, DEFAULT_ITEM_PER_PAGE);
 
+        int maxItemPerPage = polyInfo.fetch(MAX_ITEM_PER_PAGE_KEY, MAX_ITEM_PER_PAGE);
+        if (itemPerPage > maxItemPerPage) {
+            itemPerPage = polyInfo.fetch(MAX_ITEM_PER_PAGE_KEY, MAX_ITEM_PER_PAGE);
+        }
+
         PolyQuery polyQuery = new PolyQuery();
         polyQuery.setTag(tag);
         polyQuery.setItemPerPage(itemPerPage);
         polyQuery.setPage(apiPolyQuery.getPage());
+        polyQuery.setRandomOrder(apiPolyQuery.getRandomOrder());
 
         return mongodbStorage.fetchRecords(poly, polyQuery);
     }
