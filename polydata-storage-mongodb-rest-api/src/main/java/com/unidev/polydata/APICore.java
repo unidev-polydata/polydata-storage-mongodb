@@ -45,7 +45,7 @@ public class APICore {
         return mongodbStorage.getTagStorage().listTags(poly, tagStorage);
     }
 
-    @Cacheable(value = "fetchRecords", key = "#storageId + '-' + #tag + '-' + #apiPolyQuery")
+    @Cacheable(value = "fetchRecords", key = "#storageId + '-' + #tag + '-' + #apiPolyQuery", unless = "#apiPolyQuery.randomOrder==true")
     public Collection<PolyRecord> fetchRecords(String storageId, String tag,
         APIPolyQuery apiPolyQuery) {
 
