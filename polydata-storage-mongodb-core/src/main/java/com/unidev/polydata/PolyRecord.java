@@ -30,7 +30,7 @@ public class PolyRecord extends BasicPoly {
      * Populate tags fields
      */
     private void populateTags() {
-        Collection<Document> rawTags = fetch(TAGS_KEY);
+        Collection<Map> rawTags = fetch(TAGS_KEY);
         if (rawTags != null) {
             Collection<BasicPoly> tags = new HashSet<>();
             rawTags.forEach(rawTag -> {
