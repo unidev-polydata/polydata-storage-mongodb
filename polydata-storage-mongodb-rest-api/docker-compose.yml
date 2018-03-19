@@ -3,6 +3,11 @@ services:
    polydata-sorage-mongodb-web:
      hostname: polydata-sorage-mongodb
      build: .
+     healthcheck:
+       test: ["CMD", "curl", "localhost:8081/health"]
+       interval: 30s
+       timeout: 3s
+       retries: 60
      ports:
        - "8080:8080"
      environment:
