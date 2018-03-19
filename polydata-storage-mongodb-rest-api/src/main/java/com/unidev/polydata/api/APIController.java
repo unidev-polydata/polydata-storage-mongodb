@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +29,7 @@ public class APIController {
     @Autowired
     private APICore apiCore;
 
-    @RequestMapping
+    @GetMapping
     public HateoasResource root() {
 
         HateoasResource<Object> root = HateoasResource.builder().payload(
@@ -43,7 +44,7 @@ public class APIController {
         return root;
     }
 
-    @RequestMapping("storage/{storageId}")
+    @GetMapping("storage/{storageId}")
     public HateoasResource storageInfo(@PathVariable("storageId") String storageId) {
         HateoasResource polyResource = HateoasResource.builder()
             .payload(apiCore.fetchPolyInfo(storageId)).build();
@@ -54,7 +55,7 @@ public class APIController {
         return polyResource;
     }
 
-    @RequestMapping("storage/{storageId}/tags")
+    @GetMapping("storage/{storageId}/tags")
     public HateoasResource storageTags(@PathVariable("storageId") String storageId) {
         HateoasResource collectionResource = HateoasResource.builder()
             .payload(apiCore.fetchTags(storageId))
@@ -68,7 +69,7 @@ public class APIController {
         return collectionResource;
     }
 
-    @RequestMapping("storage/{storageId}/tags/{tagStorage}")
+    @GetMapping("storage/{storageId}/tags/{tagStorage}")
     public HateoasResource storageTags(@PathVariable("storageId") String storageId,
         @PathVariable("tagStorage") String tagStorage) {
         HateoasResource collectionResource = HateoasResource.builder()
@@ -111,7 +112,7 @@ public class APIController {
         return collectionResource;
     }
 
-    @RequestMapping(value = "storage/{storageId}/poly/{polyId}")
+    @GetMapping(value = "storage/{storageId}/poly/{polyId}")
     public HateoasResource poly(@PathVariable("storageId") String storageId,
         @PathVariable("polyId") String polyId) {
         Map<String, PolyRecord> recordMap = apiCore
