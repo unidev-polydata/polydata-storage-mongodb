@@ -15,9 +15,13 @@ Each poly storage have next fields:
 # Docker image build
 
  Docker image can be built from `polydata-storage-mongodb-rest-api`
-  
+
+ Docker build:
+   
  `docker build . -t polydata-storage-mongodb-rest-api:latest` 
 
+ Docker compose build:
+ `docker-compose up --build`
  
  
 License

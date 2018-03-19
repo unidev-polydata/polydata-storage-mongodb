@@ -1,0 +1,10 @@
+version: "3"
+services:
+   polydata-sorage-mongodb-web:
+     hostname: polydata-sorage-mongodb
+     build: .
+     ports:
+       - "8080:8080"
+     environment:
+      - polydata.mongodb=mongodb://devdb/polydata21-webapp?readOnly=true&readPreference=secondary
+
