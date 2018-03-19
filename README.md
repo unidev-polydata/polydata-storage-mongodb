@@ -8,6 +8,18 @@ Each poly storage have next fields:
  - tags: generic information about tags
  - tags index: index of polydata records
  
+# Build
+ 
+ Build project `./gradlew build`
+ 
+# Docker image build
+
+ Docker image can be built from `polydata-storage-mongodb-rest-api`
+  
+ `docker build . -t polydata-storage-mongodb-rest-api:latest` 
+
+ 
+ 
 License
 =======
  
