@@ -17,6 +17,10 @@ Each poly storage have next fields:
  Docker image can be built from `polydata-storage-mongodb-rest-api`
 
  Docker build:
+
+ `gradlew buildDocker`
+ 
+ Legacy build:
    
  `docker build . -t polydata-storage-mongodb-rest-api:latest` 
 

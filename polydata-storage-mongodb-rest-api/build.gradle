@@ -11,6 +11,7 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.4.17"
+        classpath "se.transmode.gradle:gradle-docker:1.2"
     }
 }
 
@@ -60,3 +61,16 @@ dependencyManagement {
         mavenBom "com.vaadin:vaadin-bom:7.7.5"
     }
 }
+
+apply plugin: 'docker'
+task buildDocker(type: Docker) {
+    baseImage = 'java:8'
+    push = project.hasProperty('push')
+    tag = 'unidev/polydata-storage-mongodb-rest-api'
+    addFile {
+        from jar
+        rename {'app.jar'}
+    }
+}
+
+buildDocker.dependsOn(build)

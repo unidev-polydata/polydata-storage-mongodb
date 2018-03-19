@@ -1,3 +1,4 @@
+# Reference docker file, check gradlew buildDocker
 FROM java:8
 VOLUME /tmp
 RUN mkdir -p /app
